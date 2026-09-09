@@ -1,0 +1,14 @@
+{
+  "incident_id": "INC-202609-001",
+  "failure_code": "DELIVERY_ACCESS_BLOCKED",
+  "failure_description": "Driver unable to complete dropoff due to security checkpoint restriction.",
+  "vendor": "Regional Freight Lines",
+  "contact_name": "Dispatch Operations",
+  "phone_number": "+18005550199",
+  "recovery_deadline": "16:00",
+  "required_action": "Provide delivery clearance reference to dispatch and confirm redelivery before 16:00 cutoff today.",
+  "authorization_info": {
+    "clearance_reference": "REF-9821",
+    "facility_access_code": "5501"
+  }
+}

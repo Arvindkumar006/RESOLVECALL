@@ -34,17 +34,32 @@ class Incident(BaseModel):
     shipment_id: Optional[str] = Field(None, description="Affected shipment, order, or asset ID")
     failure_code: str = Field(..., description="Standard failure code, e.g. GATE_CODE_MISSING, DOCK_REFUSED")
     failure_description: str = Field(..., description="Human or API explanation of what failed")
-    cargo_information: Optional[str] = Field(None, description="Cargo details, e.g. $60,000 temperature-sensitive pharmaceuticals")
+    cargo_information: Optional[str] = Field(None, description="Cargo or item details")
     facility: Optional[str] = Field(None, description="Destination facility or facility name")
-    vendor: str = Field(..., description="Carrier, vendor, or third-party service provider name")
-    contact_name: Optional[str] = Field(None, description="Dispatcher or contact person name if known")
+    vendor: str = Field(default="Carrier / Service Provider", description="Carrier, vendor, or third-party name")
+    contact_name: Optional[str] = Field(None, description="Contact person or department name")
     phone_number: str = Field(..., description="E.164 phone number to dial for recovery")
     recovery_deadline: str = Field(..., description="ISO datetime or HH:MM time before which recovery must occur")
     authorization_info: Dict[str, Any] = Field(
         default_factory=dict,
-        description="Authorized tokens/codes to provide, e.g. gate_code, po_number, dock_pin"
+        description="Authorized tokens/codes/constraints"
     )
-    required_action: str = Field(..., description="Required operational outcome, e.g. redelivery today within window")
+    required_action: str = Field(..., description="Required operational outcome")
+
+    @classmethod
+    def parse_payload(cls, data: Dict[str, Any]) -> "Incident":
+        """Normalizes arbitrary runtime operational incident payloads."""
+        d = dict(data)
+        # Map aliases
+        if "contact_phone" in d and "phone_number" not in d:
+            d["phone_number"] = d["contact_phone"]
+        if "deadline" in d and "recovery_deadline" not in d:
+            d["recovery_deadline"] = d["deadline"]
+        if "constraints" in d and "authorization_info" not in d:
+            d["authorization_info"] = d["constraints"]
+        if "vendor" not in d:
+            d["vendor"] = d.get("carrier") or d.get("service_provider") or "Operational Contact"
+        return cls(**d)
     status: IncidentStatus = Field(default=IncidentStatus.OPEN)
     created_at: datetime = Field(default_factory=utc_now)
     updated_at: datetime = Field(default_factory=utc_now)

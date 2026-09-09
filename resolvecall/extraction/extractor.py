@@ -40,17 +40,25 @@ class TranscriptExtractor:
                 dialogue_lines.append(f"{role}: {text}")
         
         full_dialogue = "\n".join(dialogue_lines)
-        summary = call_run_data.get("summary", "")
+        res_block = call_run_data.get("result", {}) or {}
+        summary = call_run_data.get("summary") or res_block.get("summary", "")
         call_status = str(call_run_data.get("status", "")).lower()
+        outcome = res_block.get("outcome")
+        calling_info = res_block.get("extracted", {}).get("calling", {})
+        calling_status = str(calling_info.get("status", "")).lower()
 
         combined_text = f"{summary}\n{full_dialogue}"
 
         # 2. Extract resolution status
-        if any(term in combined_text.lower() for term in ["cannot accommodate", "refused", "unable to deliver today", "not possible", "delivery rejected"]):
+        if calling_status in ("no answer", "busy", "rejected") or (outcome and not outcome.get("task_completed")):
+            evidence.resolution_status = "UNRESOLVED"
+            if outcome and outcome.get("evidence"):
+                evidence.raw_evidence_quotes.extend(outcome.get("evidence"))
+        elif any(term in combined_text.lower() for term in ["cannot accommodate", "refused", "unable to deliver today", "not possible", "delivery rejected"]):
             evidence.resolution_status = "REFUSED"
         elif any(term in combined_text.lower() for term in ["confirmed", "scheduled", "re-routed", "rerouted", "agreed", "dispatching", "driver en route", "approved"]):
             evidence.resolution_status = "CONFIRMED"
-        elif call_status in ("completed", "success"):
+        elif call_status in ("completed", "success") and outcome and outcome.get("task_completed"):
             evidence.resolution_status = "CONFIRMED"
         else:
             evidence.resolution_status = "PENDING"

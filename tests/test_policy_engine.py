@@ -32,7 +32,7 @@ def test_policy_engine_valid_proposal(sample_incident):
     )
     result = PolicyEngine.evaluate(sample_incident, evidence)
     assert result.decision == PolicyDecision.VALID
-    assert "within the operational deadline" in result.reason
+    assert "satisfies operational deadline" in result.reason
 
 
 def test_policy_engine_exact_boundary(sample_incident):
@@ -57,7 +57,7 @@ def test_policy_engine_violates_deadline(sample_incident):
     )
     result = PolicyEngine.evaluate(sample_incident, evidence)
     assert result.decision == PolicyDecision.INVALID
-    assert "exceeds the required operational deadline" in result.reason
+    assert "violates operational deadline" in result.reason
 
 
 def test_policy_engine_rejects_tomorrow_offer(sample_incident):
