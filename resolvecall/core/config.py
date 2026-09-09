@@ -1,7 +1,10 @@
 import os
 import re
 from typing import List, Optional
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
+
+load_dotenv()
 
 
 class Settings(BaseSettings):
@@ -30,7 +33,9 @@ class Settings(BaseSettings):
             return True
             
         allowed = [p.strip() for p in self.AUTHORIZED_PHONE_WHITELIST.split(",") if p.strip()]
-        return cleaned in allowed or phone in allowed
+        allowed_cleaned = [re.sub(r"[^\d+]", "", p) for p in allowed]
+        return cleaned in allowed or phone in allowed or cleaned in allowed_cleaned
 
 
 settings = Settings()
+
