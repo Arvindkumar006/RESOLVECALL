@@ -68,7 +68,7 @@ class RecoveryOrchestrator:
 
     def ingest_incident(self, payload: Dict[str, Any]) -> Incident:
         """Ingests arbitrary operational incident payload."""
-        incident = Incident(**payload)
+        incident = Incident.parse_payload(payload)
         self.incidents[incident.incident_id] = incident
         
         # Synchronously record initial audit event
@@ -137,7 +137,20 @@ class RecoveryOrchestrator:
 
         plan_id = plan_res.get("plan_id")
         confirm_token = plan_res.get("confirm_token")
+        ready_to_run = plan_res.get("ready_to_run", True)
         incident.calle_call_id = plan_id
+
+        if not confirm_token or not ready_to_run:
+            blocker = plan_res.get("confirm_summary") or plan_res.get("next_step") or "CALL-E requires clarification before execution."
+            incident.status = IncidentStatus.FAILED
+            await self._emit_event(
+                incident_id,
+                "PLAN_BLOCKED",
+                f"CALL-E call planning blocked: {blocker}",
+                {"plan_res": plan_res},
+            )
+            return incident
+
         await self._emit_event(
             incident_id,
             "CALL_PLANNED",
@@ -193,23 +206,30 @@ class RecoveryOrchestrator:
 
             final_call_data = status_res
             cur_status = str(status_res.get("status", "")).lower()
+            res_block = status_res.get("result", {}) or {}
+            calling_info = res_block.get("extracted", {}).get("calling", {})
+            calling_status = str(calling_info.get("status", "")).lower()
+            outcome = res_block.get("outcome")
+            next_step_action = status_res.get("next_step", {}).get("action", "")
 
             # Inspect transcript/activities if available
-            raw_activities = status_res.get("activities") or status_res.get("transcript") or []
+            raw_activities = status_res.get("activity") or status_res.get("activities") or res_block.get("transcript") or []
             if raw_activities:
-                # Update transcript in incident
                 formatted_turns = []
                 for a in raw_activities:
-                    speaker = a.get("speaker") or a.get("role") or "speaker"
-                    text = a.get("text") or a.get("content") or ""
+                    speaker = a.get("speaker") or a.get("role") or a.get("kind") or "system"
+                    text = a.get("text") or a.get("content") or a.get("message") or ""
                     if text:
                         formatted_turns.append({"role": speaker, "text": text})
                 incident.transcript = formatted_turns
 
-            if cur_status in ("calling", "ringing"):
+            # Handle live ringing / calling
+            if calling_status in ("calling", "pending") or "ringing" in str(raw_activities).lower():
                 if incident.status != IncidentStatus.CALLING:
                     incident.status = IncidentStatus.CALLING
-            elif cur_status in ("connected", "in-progress", "active"):
+
+            # Handle active connected call
+            if calling_status in ("connected", "in-progress", "active"):
                 if incident.status != IncidentStatus.NEGOTIATING:
                     incident.status = IncidentStatus.NEGOTIATING
                     await self._emit_event(
@@ -217,12 +237,22 @@ class RecoveryOrchestrator:
                         "CALL_CONNECTED",
                         f"PSTN line connected to {incident.vendor}. Dynamic agent negotiation active.",
                     )
-            elif cur_status in ("completed", "ended", "success", "failed", "busy", "no-answer"):
+
+            # Check for terminal call states (completed, ended, no answer, busy, failed)
+            is_terminal = (
+                cur_status in ("completed", "ended", "success", "failed", "busy", "no-answer")
+                or calling_status in ("no answer", "completed", "ended", "failed", "busy", "rejected")
+                or outcome is not None
+                or next_step_action == "ask_user_for_retry_confirmation"
+            )
+
+            if is_terminal:
+                terminal_reason = calling_status or cur_status or "Call Concluded"
                 await self._emit_event(
                     incident_id,
                     "CALL_COMPLETED",
-                    f"Telephony call concluded with status: {cur_status.upper()}.",
-                    {"status": cur_status},
+                    f"Telephony call concluded with status: {terminal_reason.upper()}.",
+                    {"status": terminal_reason, "summary": res_block.get("summary")},
                 )
                 break
 

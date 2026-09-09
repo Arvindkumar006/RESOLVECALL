@@ -14,12 +14,13 @@ class RecoveryPlanner:
         # 1. Identify recipient role / department
         contact_str = f"asking for {incident.contact_name}" if incident.contact_name else "asking for dispatch or operations supervisor"
 
-        # 2. Format authorized tokens
+        # 2. Format authorized operational reference details
         auth_items = []
         for k, v in incident.authorization_info.items():
-            label = k.replace("_", " ").title()
+            clean_key = k.lower().replace("token", "reference").replace("pin", "code")
+            label = clean_key.replace("_", " ").title()
             auth_items.append(f"{label}: {v}")
-        auth_block = "; ".join(auth_items) if auth_items else "Standard operational verification credentials"
+        auth_block = "; ".join(auth_items) if auth_items else "Standard operational dispatch clearance"
 
         # 3. Build the prompt for CALL-E
         prompt_parts: List[str] = [

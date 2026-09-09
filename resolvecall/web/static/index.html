@@ -211,17 +211,22 @@
         <button class="btn-close" id="btn-close-modal">&times;</button>
       </div>
       <div class="modal-body">
-        <p class="modal-intro">Submit an arbitrary incident payload to be analyzed, planned, and recovered via CALL-E telephony.</p>
-        
-        <div class="template-selector">
-          <span>Load Standard Operational Scenario:</span>
-          <button class="btn btn-sm btn-outline" id="btn-preset-pharma">Medical Cold-Chain ($60K Gate Code)</button>
-          <button class="btn btn-sm btn-outline" id="btn-preset-dock">Port Facility Dock Block</button>
-        </div>
+        <p class="modal-intro">Submit a real operational incident payload below. ResolveCall will dynamically formulate recovery constraints, initiate real CALL-E telephony, and deterministically validate the negotiated resolution.</p>
 
         <div class="form-group">
-          <label for="incident-json-input">Incident JSON Payload:</label>
-          <textarea id="incident-json-input" rows="14" class="code-editor"></textarea>
+          <label for="incident-json-input">Operational Incident JSON Payload:</label>
+          <textarea id="incident-json-input" rows="14" class="code-editor" placeholder='{
+  "incident_id": "INC-OPS-001",
+  "failure_code": "DELIVERY_BLOCKED",
+  "failure_description": "Driver unable to access dropoff dock",
+  "contact_name": "Dispatch",
+  "contact_phone": "+18005550100",
+  "deadline": "14:00",
+  "required_action": "Negotiate access and emergency redelivery today before deadline",
+  "constraints": {
+    "access_pin": "9921"
+  }
+}'></textarea>
         </div>
       </div>
       <div class="modal-footer">

@@ -4,42 +4,18 @@ let activeIncidentId = null;
 let eventSource = null;
 let allIncidents = [];
 
-// Preset incident payloads
-const PRESET_PHARMA = {
-  incident_id: "INC-COLD-88219",
-  shipment_id: "SHP-MED-9941",
-  failure_code: "UNDELIVERABLE_GATE_CODE_MISSING",
-  failure_description: "Carrier driver at Facility Gate 4 unable to enter due to missing keypad security gate code. Shipment held outside.",
-  cargo_information: "$60,000 temperature-sensitive biologic medication (Cold-chain 2°C–8°C; spoilage risk if delayed)",
-  facility: "Mercy Health Logistics Hub - Dock B",
-  vendor: "Apex Express Freight",
-  contact_name: "Dispatch Operations",
+const DEFAULT_SCHEMA_TEMPLATE = {
+  incident_id: "INC-" + Math.floor(10000 + Math.random() * 90000),
+  failure_code: "OPERATIONAL_FAILURE",
+  failure_description: "Describe the actual operational failure",
+  vendor: "Responsible Carrier / Service Provider",
+  contact_name: "Operations Dispatch",
   phone_number: "+18005550100",
-  recovery_deadline: "11:30",
+  recovery_deadline: "16:00",
+  required_action: "Negotiate resolution before deadline cutoff",
   authorization_info: {
-    gate_access_code: "#4920*",
-    po_number: "PO-MED-98842",
-    receiving_lead_phone: "+15550192834"
-  },
-  required_action: "Provide gate code #4920* to dispatch/driver and secure emergency redelivery before 11:30 AM cutoff today."
-};
-
-const PRESET_DOCK = {
-  incident_id: "INC-DOCK-33012",
-  shipment_id: "SHP-AERO-4412",
-  failure_code: "DOCK_REFUSED_MISSING_MANIFEST",
-  failure_description: "Receiving refused trailer because electronic customs manifest reference is missing from bill of lading.",
-  cargo_information: "AOG Aircraft Replacement Actuator ($120,000 urgent turnaround)",
-  facility: "Skyline Air Cargo Bay 12",
-  vendor: "Global Logistics Direct",
-  contact_name: "Trailer Line Dispatch",
-  phone_number: "+18005550100",
-  recovery_deadline: "14:00",
-  authorization_info: {
-    manifest_pin: "PIN-7721-CUST",
-    customs_entry_num: "C-8812903"
-  },
-  required_action: "Provide manifest PIN-7721-CUST to dispatch to clear dock refusal for delivery before 14:00 today."
+    authorization_code: "AUTH-1234"
+  }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -56,18 +32,10 @@ function initElements() {
   const btnTrigger = document.getElementById("btn-trigger-recovery");
   const jsonInput = document.getElementById("incident-json-input");
 
-  // Presets
-  document.getElementById("btn-preset-pharma").addEventListener("click", () => {
-    jsonInput.value = JSON.stringify(PRESET_PHARMA, null, 2);
-  });
-  document.getElementById("btn-preset-dock").addEventListener("click", () => {
-    jsonInput.value = JSON.stringify(PRESET_DOCK, null, 2);
-  });
-
   // Modal open / close
   btnOpenModal.addEventListener("click", () => {
-    if (!jsonInput.value) {
-      jsonInput.value = JSON.stringify(PRESET_PHARMA, null, 2);
+    if (!jsonInput.value.trim()) {
+      jsonInput.value = JSON.stringify(DEFAULT_SCHEMA_TEMPLATE, null, 2);
     }
     modal.style.display = "flex";
   });
