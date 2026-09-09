@@ -1,0 +1,63 @@
+openapi: 3.0.0
+info:
+  title: JARVIS Sentinel Autonomous SOC Action Group
+  description: Bedrock Agent Action Group schema for autonomous investigation and HITL remediation.
+  version: 1.0.0
+paths:
+  /investigate:
+    post:
+      summary: Investigate a security incident telemetry stream
+      description: Runs multi-agent detection, EDR forensics, threat intel enrichment, and risk scoring.
+      operationId: investigateIncident
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scenario:
+                  type: string
+                  description: Scenario to execute ('a' for routine port scan, 'b' for critical ransomware)
+                  enum: ["a", "b"]
+              required:
+                - scenario
+      responses:
+        "200":
+          description: Investigation completed or awaiting HITL approval
+          content:
+            application/json:
+              schema:
+                type: object
+  /remediate:
+    post:
+      summary: Execute or deny consequential containment action
+      description: Approves or denies an incident awaiting HITL authorization.
+      operationId: handleHITLAction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                incident_id:
+                  type: string
+                  description: Incident ID (e.g. INC-1042)
+                action:
+                  type: string
+                  description: Action to take ('approve' or 'deny')
+                  enum: ["approve", "deny"]
+                approver:
+                  type: string
+                  description: Identifier or role of the human approver
+              required:
+                - incident_id
+                - action
+      responses:
+        "200":
+          description: Containment executed or denied with postmortem report
+          content:
+            application/json:
+              schema:
+                type: object

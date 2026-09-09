@@ -28,6 +28,11 @@
       }
     ]
   },
+  "action_group": {
+    "name": "SentinelActions",
+    "description": "Autonomous security triage, EDR forensic inspection, and HITL containment endpoints.",
+    "api_schema": "bedrock_agentcore/action_group_schema.yaml"
+  },
   "guardrails": {
     "deterministic_policy_enforcement": true,
     "hitl_approval_required_for": ["HIGH", "CRITICAL"],

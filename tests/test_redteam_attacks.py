@@ -51,23 +51,40 @@ def test_attack_containment_no_token():
 
 def test_attack_containment_invalid_forged_token():
     """Attack: Attacker manufactures an un-minted forged token string."""
-    forged = "HITL_APPROVED_BY_HACKER_999999"
+    forged = "HITL_APPROVED.eyJzdWIiOiJoYWNrZXIifQ.fake_signature"
     res = json.loads(execute_safe_containment(action="ISOLATE_ENDPOINT", host_id="FINANCE-PC-07", authorization_token=forged))
     assert res["success"] is False
     assert res["status"] == "BLOCKED_BY_POLICY"
     assert SimulatedEnvironment().get_host("FINANCE-PC-07")["status"] == EndpointStatus.CONNECTED.value
 
 
+def test_attack_containment_token_tampered_payload():
+    """Attack: Attacker tampers with the payload of a valid token without knowing the secret."""
+    from core.security import mint_authorization_token
+    token = mint_authorization_token("INC-1042", "FINANCE-PC-07", "ISOLATE_ENDPOINT", "Analyst")
+    parts = token.split(".")
+    # Tamper with middle part (payload)
+    tampered_token = f"{parts[0]}.eyJoYWNrZWQiOiB0cnVlfQ.{parts[2]}"
+    res = json.loads(execute_safe_containment(action="ISOLATE_ENDPOINT", host_id="FINANCE-PC-07", authorization_token=tampered_token))
+    assert res["success"] is False
+    assert res["status"] == "BLOCKED_BY_POLICY"
+
+
+def test_attack_containment_token_expired():
+    """Attack: Attacker attempts to use an expired token (negative TTL)."""
+    from core.security import mint_authorization_token
+    expired_token = mint_authorization_token("INC-1042", "FINANCE-PC-07", "ISOLATE_ENDPOINT", "Analyst", ttl_seconds=-10)
+    res = json.loads(execute_safe_containment(action="ISOLATE_ENDPOINT", host_id="FINANCE-PC-07", authorization_token=expired_token))
+    assert res["success"] is False
+    assert res["status"] == "BLOCKED_BY_POLICY"
+
+
 def test_attack_containment_token_for_another_host():
     """Attack: Token minted for DEV-BOX-02 is used to attempt isolation of FINANCE-PC-07."""
-    HITLStateMachine._valid_tokens["TOKEN_DEV_ONLY"] = {
-        "incident_id": "INC-1019",
-        "host_id": "DEV-BOX-02",
-        "action": "ISOLATE_ENDPOINT",
-        "approver": "SecOps"
-    }
+    from core.security import mint_authorization_token
+    token_dev = mint_authorization_token("INC-1019", "DEV-BOX-02", "ISOLATE_ENDPOINT", "SecOps")
 
-    res = json.loads(execute_safe_containment(action="ISOLATE_ENDPOINT", host_id="FINANCE-PC-07", authorization_token="TOKEN_DEV_ONLY"))
+    res = json.loads(execute_safe_containment(action="ISOLATE_ENDPOINT", host_id="FINANCE-PC-07", authorization_token=token_dev))
     assert res["success"] is False
     assert res["status"] == "BLOCKED_BY_POLICY"
     assert SimulatedEnvironment().get_host("FINANCE-PC-07")["status"] == EndpointStatus.CONNECTED.value
@@ -75,28 +92,19 @@ def test_attack_containment_token_for_another_host():
 
 def test_attack_containment_token_for_another_action():
     """Attack: Token minted for TERMINATE_SUSPICIOUS_PROCESSES is used for ISOLATE_ENDPOINT."""
-    HITLStateMachine._valid_tokens["TOKEN_KILL_ONLY"] = {
-        "incident_id": "INC-1042",
-        "host_id": "FINANCE-PC-07",
-        "action": "TERMINATE_SUSPICIOUS_PROCESSES",
-        "approver": "SecOps"
-    }
+    from core.security import mint_authorization_token
+    token_proc = mint_authorization_token("INC-1042", "FINANCE-PC-07", "TERMINATE_SUSPICIOUS_PROCESSES", "SecOps")
 
-    res = json.loads(execute_safe_containment(action="ISOLATE_ENDPOINT", host_id="FINANCE-PC-07", authorization_token="TOKEN_KILL_ONLY"))
+    res = json.loads(execute_safe_containment(action="ISOLATE_ENDPOINT", host_id="FINANCE-PC-07", authorization_token=token_proc))
     assert res["success"] is False
     assert res["status"] == "BLOCKED_BY_POLICY"
     assert SimulatedEnvironment().get_host("FINANCE-PC-07")["status"] == EndpointStatus.CONNECTED.value
 
 
 def test_attack_containment_token_replay_reuse():
-    """Attack: Reusing a valid token after it was already consumed in previous containment."""
-    valid_token = "HITL_APPROVED_SINGLE_USE"
-    HITLStateMachine._valid_tokens[valid_token] = {
-        "incident_id": "INC-1042",
-        "host_id": "FINANCE-PC-07",
-        "action": "ISOLATE_ENDPOINT",
-        "approver": "SecOps"
-    }
+    """Attack: Reusing a valid token after its nonce was already burned in previous containment."""
+    from core.security import mint_authorization_token
+    valid_token = mint_authorization_token("INC-1042", "FINANCE-PC-07", "ISOLATE_ENDPOINT", "SecOps")
 
     # First legitimate execution consumes token
     res1 = json.loads(execute_safe_containment(action="ISOLATE_ENDPOINT", host_id="FINANCE-PC-07", authorization_token=valid_token))
@@ -106,7 +114,7 @@ def test_attack_containment_token_replay_reuse():
     # Reset host back to CONNECTED to test replay attempt
     SimulatedEnvironment().hosts["FINANCE-PC-07"].status = EndpointStatus.CONNECTED
 
-    # Second execution using identical token MUST FAIL
+    # Second execution using identical token MUST FAIL because nonce was consumed
     res2 = json.loads(execute_safe_containment(action="ISOLATE_ENDPOINT", host_id="FINANCE-PC-07", authorization_token=valid_token))
     assert res2["success"] is False
     assert res2["status"] == "BLOCKED_BY_POLICY"

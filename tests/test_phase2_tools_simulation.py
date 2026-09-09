@@ -68,19 +68,20 @@ def test_containment_tools_authorization_boundary():
     env = SimulatedEnvironment()
     assert env.get_host("FINANCE-PC-07")["status"] == "CONNECTED"
 
-    # 2. Register valid token bound to FINANCE-PC-07
-    HITLStateMachine._valid_tokens["HITL_APPROVED_BY_ANALYST"] = {
-        "incident_id": "INC-1042",
-        "host_id": "FINANCE-PC-07",
-        "action": "ISOLATE_ENDPOINT",
-        "approver": "Analyst"
-    }
+    # 2. Mint cryptographically valid HMAC token bound to FINANCE-PC-07 and ISOLATE_ENDPOINT
+    from core.security import mint_authorization_token
+    valid_token = mint_authorization_token(
+        incident_id="INC-1042",
+        host_id="FINANCE-PC-07",
+        action="ISOLATE_ENDPOINT",
+        approver="Analyst"
+    )
 
     # Supplying valid approval token successfully isolates endpoint
     success_res = json.loads(execute_safe_containment(
         action="ISOLATE_ENDPOINT",
         host_id="FINANCE-PC-07",
-        authorization_token="HITL_APPROVED_BY_ANALYST"
+        authorization_token=valid_token
     ))
     assert success_res["success"] is True
     assert success_res["new_network_status"] == "ISOLATED"
@@ -88,11 +89,11 @@ def test_containment_tools_authorization_boundary():
     # Verify endpoint is now ISOLATED in simulated state
     assert env.get_host("FINANCE-PC-07")["status"] == "ISOLATED"
 
-    # 3. Attempting to REUSE the same token must fail (single-use protection)
+    # 3. Attempting to REUSE the same token must fail (nonce burning / single-use protection)
     reused_res = json.loads(execute_safe_containment(
         action="ISOLATE_ENDPOINT",
         host_id="FINANCE-PC-07",
-        authorization_token="HITL_APPROVED_BY_ANALYST"
+        authorization_token=valid_token
     ))
     assert reused_res["success"] is False
     assert reused_res["status"] == "BLOCKED_BY_POLICY"

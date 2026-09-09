@@ -13,6 +13,7 @@ from typing import Any, Dict, Optional
 from core.models import IncidentBrief, IncidentStatus, RiskLevel
 from core.simulation_state import SimulatedEnvironment
 from core.policy_engine import DeterministicPolicyEngine
+from core.security import mint_authorization_token, verify_authorization_token
 
 
 class HITLState:
@@ -24,11 +25,10 @@ class HITLState:
 
 
 class HITLStateMachine:
-    """Thread-safe state machine managing consequential incident gates."""
+    """Thread-safe state machine managing consequential incident gates with HMAC-SHA256 tokens."""
 
     _lock = threading.RLock()
-    _valid_tokens: Dict[str, Dict[str, Any]] = {}
-    _consumed_tokens: set = set()
+    _consumed_nonces: set = set()
 
     def __init__(self):
         self.pending_incidents: Dict[str, IncidentBrief] = {}
@@ -37,31 +37,31 @@ class HITLStateMachine:
         self.incident_tokens: Dict[str, str] = {}
 
     @classmethod
-    def get_all_valid_tokens(cls) -> Dict[str, Dict[str, Any]]:
-        with cls._lock:
-            return dict(cls._valid_tokens)
-
-    @classmethod
     def consume_token(cls, token: str, host_id: str, action: str) -> bool:
-        """Validates and consumes an authorization token for a specific host and action."""
+        """
+        Cryptographically verifies HMAC signature, expiry, host/action binding,
+        and atomically burns the nonce to prevent token replay attacks.
+        """
         with cls._lock:
-            if not token or token not in cls._valid_tokens:
+            is_valid, reason, payload = verify_authorization_token(
+                token=token,
+                expected_host=host_id,
+                expected_action=action
+            )
+            if not is_valid or not payload:
                 return False
-            if token in cls._consumed_tokens:
-                return False
-            token_meta = cls._valid_tokens[token]
-            if token_meta.get("host_id") and token_meta["host_id"] != host_id:
-                return False
-            if token_meta.get("action") and token_meta["action"] != action:
-                return False
-            cls._consumed_tokens.add(token)
+
+            nonce = payload.get("jti")
+            if not nonce or nonce in cls._consumed_nonces:
+                return False  # Nonce already consumed (replay attempt)
+
+            cls._consumed_nonces.add(nonce)
             return True
 
     @classmethod
     def reset_tokens(cls):
         with cls._lock:
-            cls._valid_tokens.clear()
-            cls._consumed_tokens.clear()
+            cls._consumed_nonces.clear()
 
     def register_incident(self, brief: IncidentBrief) -> str:
         """Register an incident brief into the HITL pipeline."""
@@ -98,23 +98,19 @@ class HITLStateMachine:
                 return {"success": False, "error": f"Cannot approve incident in state '{current_state}'"}
 
             clean_approver = approver.strip() or "SecOps_Analyst"
-            token = f"HITL_APPROVED_BY_{clean_approver.upper()}_{datetime.now(timezone.utc).strftime('%H%M%S')}"
+            brief = self.pending_incidents[incident_id]
+            token = mint_authorization_token(
+                incident_id=incident_id,
+                host_id=brief.affected_host,
+                action=brief.recommended_action,
+                approver=clean_approver,
+                ttl_seconds=300
+            )
 
             self.incident_states[incident_id] = HITLState.APPROVED
             self.incident_approvers[incident_id] = clean_approver
             self.incident_tokens[incident_id] = token
-
-            brief = self.pending_incidents[incident_id]
             brief.status = IncidentStatus.REMEDIATING
-
-            # Register token in class registry with bound metadata
-            self._valid_tokens[token] = {
-                "incident_id": incident_id,
-                "host_id": brief.affected_host,
-                "action": brief.recommended_action,
-                "approver": clean_approver,
-                "issued_at": datetime.now(timezone.utc).isoformat()
-            }
 
             env = SimulatedEnvironment()
             env.record_audit(

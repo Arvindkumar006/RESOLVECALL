@@ -193,6 +193,8 @@ tests/test_phase4_e2e_scenarios.py::test_scenario_b_api_hitl_approval_flow PASSE
 tests/test_phase4_e2e_scenarios.py::test_scenario_b_api_hitl_deny_flow PASSED
 tests/test_redteam_attacks.py::test_attack_containment_no_token PASSED
 tests/test_redteam_attacks.py::test_attack_containment_invalid_forged_token PASSED
+tests/test_redteam_attacks.py::test_attack_containment_token_tampered_payload PASSED
+tests/test_redteam_attacks.py::test_attack_containment_token_expired PASSED
 tests/test_redteam_attacks.py::test_attack_containment_token_for_another_host PASSED
 tests/test_redteam_attacks.py::test_attack_containment_token_for_another_action PASSED
 tests/test_redteam_attacks.py::test_attack_containment_token_replay_reuse PASSED
@@ -200,7 +202,7 @@ tests/test_redteam_attacks.py::test_attack_api_approve_nonexistent_incident PASS
 tests/test_redteam_attacks.py::test_attack_api_deny_nonexistent_incident PASSED
 tests/test_redteam_attacks.py::test_attack_api_double_approval PASSED
 tests/test_redteam_attacks.py::test_attack_api_approve_after_denial PASSED
-============================== 23 passed in ~8s ==============================
+============================== 25 passed in ~8s ==============================
 ```
 
 ---
@@ -208,11 +210,22 @@ tests/test_redteam_attacks.py::test_attack_api_approve_after_denial PASSED
 ## ☁️ Amazon Bedrock & AgentCore Deployment Status
 
 * **Amazon Bedrock**: **Configured / Integration Path Available** (Native `BedrockModel` loaded via `model_factory.py` when `USE_BEDROCK=true` and credentials are supplied).
-* **Amazon Bedrock AgentCore**: **AgentCore-Ready / Deployment Configuration Included** (Containerized Lambda handler `bedrock_agentcore/agentcore_app.py`, toolkit config `bedrock_agentcore/toolkit_config.json`, and `bedrock_agentcore/Dockerfile`).
+* **Amazon Bedrock AgentCore Runtime**: **Containerized & OpenAPI Action Group Ready**
+  * **Lambda Container Handler**: `bedrock_agentcore/agentcore_app.py` (Supports native Bedrock Action Group request schemas and direct JSON events)
+  * **OpenAPI 3.0 Action Group Schema**: `bedrock_agentcore/action_group_schema.yaml`
+  * **Toolkit Configuration**: `bedrock_agentcore/toolkit_config.json`
+  * **Container Image Definition**: `bedrock_agentcore/Dockerfile`
+  * **Automated Cloud Deploy Script**: `bedrock_agentcore/deploy_agentcore.sh` (ECR login, image push, and Lambda function creation)
 
-### Building the AgentCore Container
+### Building the AgentCore Container Locally
 ```bash
 docker build -t jarvis-sentinel-agentcore:latest -f bedrock_agentcore/Dockerfile .
+```
+
+### Deploying to AWS Bedrock AgentCore
+```bash
+chmod +x bedrock_agentcore/deploy_agentcore.sh
+./bedrock_agentcore/deploy_agentcore.sh
 ```
 
 ---
@@ -230,17 +243,20 @@ jarvis-sentinel/
 │   ├── model_factory.py         # BedrockModel vs OfflineStrandsModel loader
 │   └── orchestrator.py          # Supervisor coordinating the agent pipeline
 ├── bedrock_agentcore/           # AWS Bedrock deployment configuration
-│   ├── agentcore_app.py         # AWS Lambda entrypoint
+│   ├── agentcore_app.py         # AWS Lambda entrypoint (Action Group handler)
+│   ├── action_group_schema.yaml # Bedrock Agent OpenAPI 3.0 schema
 │   ├── toolkit_config.json      # Bedrock AgentCore manifest
+│   ├── deploy_agentcore.sh      # Automated ECR / Lambda deploy script
 │   └── Dockerfile               # Container build definition
 ├── core/                        # System foundation & models
 │   ├── models.py                # Pydantic schemas for events, briefs, & traces
 │   ├── policy_engine.py         # Deterministic authorization boundary logic
+│   ├── security.py              # HMAC-SHA256 signed tokens (nonce, exp, hmac)
 │   ├── simulation_state.py      # Thread-safe virtual cyber-environment state
 │   └── telemetry.py             # Realistic Scenario A & B event generators
 ├── hitl/                        # Human-in-the-Loop subsystem
-│   └── state_machine.py         # Approval state machine & signed token minting
-├── tests/                       # Complete pytest suite (23 verified tests)
+│   └── state_machine.py         # Approval state machine & HMAC token minting
+├── tests/                       # Complete pytest suite (25 verified tests)
 │   ├── test_phase1_models_policy.py
 │   ├── test_phase2_tools_simulation.py
 │   ├── test_phase3_agents_orchestrator.py
