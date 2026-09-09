@@ -1,0 +1,40 @@
+{
+  "agent_name": "JARVIS-Sentinel-Autonomous-SOC",
+  "runtime": "python3.13",
+  "foundation_model": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+  "agent_collaboration": {
+    "collaboration_mode": "SUPERVISOR",
+    "supervisor_agent": "SentinelOrchestrator",
+    "collaborator_agents": [
+      {
+        "agent_name": "DetectionAgent",
+        "description": "Parses raw telemetry, groups signals by host and parent PID, correlates MITRE techniques."
+      },
+      {
+        "agent_name": "InvestigatorAgent",
+        "description": "Inspects host process trees and checks canary honeypot file integrity using simulated EDR tools."
+      },
+      {
+        "agent_name": "ThreatIntelAgent",
+        "description": "Performs reputation queries for external IPs, hashes, and ATT&CK techniques."
+      },
+      {
+        "agent_name": "RiskAgent",
+        "description": "Evaluates blast radius, asset criticality, and suggests containment actions."
+      },
+      {
+        "agent_name": "RemediationAgent",
+        "description": "Executes policy-authorized containment actions (bounded or HITL gated) in simulated environment."
+      }
+    ]
+  },
+  "guardrails": {
+    "deterministic_policy_enforcement": true,
+    "hitl_approval_required_for": ["HIGH", "CRITICAL"],
+    "autonomous_remediation_allowed_for": ["LOW", "MEDIUM"]
+  },
+  "audit_logging": {
+    "destination": "CloudWatch / In-Memory Structured JSON Trace",
+    "retention_days": 365
+  }
+}
