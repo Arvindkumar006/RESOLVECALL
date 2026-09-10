@@ -16,21 +16,84 @@ class PolicyEngine:
     """Generic, deterministic policy evaluation engine.
     Calculates the exact mathematical relationship between the actual proposed time/window
     and the actual operational recovery deadline.
+
+    State machine semantics:
+      - Evidence missing / call interrupted / no window extracted → AMBIGUOUS (not INVALID)
+      - Evidence present, window within deadline → VALID → RECOVERED
+      - Evidence present, window exceeds deadline → INVALID → DEADLINE_CONSTRAINT_VIOLATION
+      - Recipient explicitly REFUSED commitment → AMBIGUOUS (requires retry/escalation)
+      - Actual current time past deadline with no resolution → caller marks DEADLINE_MISSED
     """
 
     @classmethod
-    def evaluate(cls, incident: Incident, evidence: StructuredEvidence) -> PolicyEvaluationResult:
-        """Evaluates extracted evidence against the incident's constraints using deterministic temporal math."""
-        # 1. Check if the recipient explicitly refused or failed to commit
-        if evidence.resolution_status in ("REFUSED", "FAILED", "UNRESOLVED"):
+    def evaluate(
+        cls,
+        incident: Incident,
+        evidence: StructuredEvidence,
+        call_connected: bool = False,
+    ) -> PolicyEvaluationResult:
+        """Evaluates extracted evidence against the incident's constraints using deterministic temporal math.
+
+        DEADLINE_MISSED is NEVER emitted here — that is a real-time clock check done by the orchestrator.
+        This method only evaluates whether the EVIDENCE satisfies the deadline constraint.
+        """
+
+        # 1. If recipient explicitly REFUSED or call could not obtain evidence (UNRESOLVED/FAILED)
+        #    → AMBIGUOUS, not INVALID. The call may need retry or human escalation.
+        #    INVALID is reserved for: a window was proposed but mathematically exceeds the deadline.
+        if evidence.resolution_status in ("REFUSED",):
             return PolicyEvaluationResult(
-                decision=PolicyDecision.INVALID,
+                decision=PolicyDecision.AMBIGUOUS,
                 deadline_evaluated=incident.recovery_deadline,
                 proposed_window_end=evidence.agreed_window_end,
-                reason=f"Recovery commitment was refused or could not be established: {evidence.notes or 'No agreement reached'}.",
+                reason=(
+                    "Recovery commitment was refused by the recipient. "
+                    "No delivery window was agreed upon. "
+                    "The incident requires retry or supervisor escalation."
+                ),
             )
 
-        # 2. Check if a time or window was extracted
+        if evidence.resolution_status in ("FAILED", "UNRESOLVED", "PENDING"):
+            # Build an accurate reason from what was and wasn't actually obtained
+            has_window = bool(evidence.agreed_window_start or evidence.agreed_window_end)
+            has_rep = bool(evidence.representative_name)
+            has_code = bool(evidence.authorization_code)
+
+            if call_connected:
+                if has_window and not has_rep and not has_code:
+                    reason = (
+                        f"The call connected and a delivery window "
+                        f"({evidence.agreed_window_start or ''} – {evidence.agreed_window_end or ''}) "
+                        f"was stated, but representative identity and confirmation code were not "
+                        f"independently confirmed. The window cannot be treated as a verified "
+                        f"negotiated commitment without representative confirmation."
+                    )
+                elif has_window and has_rep:
+                    reason = (
+                        f"The call connected. A window and representative name were obtained "
+                        f"but the CALL-E task did not complete successfully. "
+                        f"The commitment requires human verification before marking as recovered."
+                    )
+                else:
+                    reason = (
+                        "Recovery could not be verified because the call connected but the "
+                        "conversation was interrupted before the required operational evidence "
+                        "was obtained. No delivery window or representative confirmation was "
+                        "captured. The incident remains unresolved and requires retry or escalation."
+                    )
+            else:
+                reason = (
+                    "Recovery could not be verified. The call did not reach a live representative "
+                    "or no agreement was captured. The incident requires retry or escalation."
+                )
+            return PolicyEvaluationResult(
+                decision=PolicyDecision.AMBIGUOUS,
+                deadline_evaluated=incident.recovery_deadline,
+                proposed_window_end=evidence.agreed_window_end,
+                reason=reason,
+            )
+
+        # 2. Check if a concrete time or window was extracted
         target_end_str = evidence.agreed_window_end or evidence.agreed_window_start
         if not target_end_str:
             return PolicyEvaluationResult(

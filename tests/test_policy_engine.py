@@ -74,12 +74,16 @@ def test_policy_engine_rejects_tomorrow_offer(sample_incident):
 
 
 def test_policy_engine_refusal(sample_incident):
+    """REFUSED means carrier explicitly declined. This should be AMBIGUOUS (needs retry/escalation).
+    INVALID is reserved for cases where a specific window was proposed but mathematically exceeds
+    the deadline. A refusal produces no window at all, so AMBIGUOUS is the correct decision.
+    """
     evidence = StructuredEvidence(
         resolution_status="REFUSED",
         notes="Driver route full, cannot redeliver",
     )
     result = PolicyEngine.evaluate(sample_incident, evidence)
-    assert result.decision == PolicyDecision.INVALID
+    assert result.decision == PolicyDecision.AMBIGUOUS
 
 
 def test_policy_engine_arbitrary_24h_deadline():

@@ -124,6 +124,10 @@ async function selectIncident(incidentId) {
   activeIncidentId = incidentId;
   renderIncidentList(allIncidents);
 
+  // Explicitly clear all evidence/state fields before loading new incident
+  // to prevent any stale DOM state from a previous incident being visible
+  _clearDashboard();
+
   // Fetch full details
   try {
     const res = await fetch(`/api/incidents/${incidentId}`);
@@ -134,6 +138,22 @@ async function selectIncident(incidentId) {
   } catch (err) {
     console.error("Failed to fetch incident", err);
   }
+}
+
+function _clearDashboard() {
+  // Reset all evidence and policy fields to neutral state
+  document.getElementById("ev-window").textContent = "--";
+  document.getElementById("ev-dispatcher").textContent = "--";
+  document.getElementById("ev-auth").textContent = "--";
+  document.getElementById("ev-summary").textContent = "--";
+  document.getElementById("evidence-badge").textContent = "Awaiting Call";
+  document.getElementById("evidence-badge").className = "badge";
+  document.getElementById("ev-quotes").innerHTML = `<span class="text-muted">Evidence quotes will be extracted live from transcript.</span>`;
+  document.getElementById("metric-policy-status").textContent = "Pending Call";
+  document.getElementById("metric-policy-status").style.color = "var(--text-muted)";
+  document.getElementById("metric-policy-reason").textContent = "Awaiting call result";
+  document.getElementById("transcript-feed").innerHTML = `<div class="empty-state">Loading incident data...</div>`;
+  document.getElementById("audit-feed").innerHTML = `<div class="text-muted" style="font-size:0.75rem;padding:0.4rem;">Loading audit trail...</div>`;
 }
 
 function updateDashboardView(inc) {
@@ -207,8 +227,8 @@ function updateDashboardView(inc) {
       ? `${ev.agreed_window_start} – ${ev.agreed_window_end}`
       : (ev.agreed_window_end || "None");
     document.getElementById("ev-window").textContent = winStr;
-    document.getElementById("ev-dispatcher").textContent = ev.representative_name || "Unspecified";
-    document.getElementById("ev-auth").textContent = ev.authorization_code || "None";
+    document.getElementById("ev-dispatcher").textContent = ev.representative_name || "Not confirmed";
+    document.getElementById("ev-auth").textContent = ev.authorization_code || "Not available";
     document.getElementById("ev-summary").textContent = inc.recovery_summary || ev.notes || "--";
 
     document.getElementById("evidence-badge").textContent = ev.resolution_status || "VERIFIED";
@@ -259,11 +279,14 @@ function renderTranscript(turns) {
   }
 
   container.innerHTML = turns.map(t => {
-    const role = (t.role || "speaker").toLowerCase();
-    const isAgent = role.includes("agent") || role.includes("assistant") || role.includes("caller");
-    const roleLabel = isAgent ? "CALL-E Recovery Agent" : "Carrier Representative";
+    // Backend sends canonical role strings: RESOLVECALL AGENT, OPERATIONS CONTACT, SYSTEM EVENT
+    const role = (t.role || "SYSTEM EVENT").toUpperCase();
+    const isAgent = role === "RESOLVECALL AGENT";
+    const isSystem = role === "SYSTEM EVENT";
+    const roleLabel = isAgent ? "RESOLVECALL AGENT" : (isSystem ? "SYSTEM EVENT" : "OPERATIONS CONTACT");
+    const cssClass = isAgent ? "agent" : (isSystem ? "system" : "human");
     return `
-      <div class="chat-turn ${isAgent ? 'agent' : 'human'}">
+      <div class="chat-turn ${cssClass}">
         <span class="speaker-tag">${roleLabel}</span>
         <div class="turn-text">${t.text}</div>
       </div>

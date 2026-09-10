@@ -18,8 +18,9 @@ class IncidentStatus(str, Enum):
     NEGOTIATING = "NEGOTIATING"
     VALIDATING = "VALIDATING"
     RECOVERED = "RECOVERED"
+    RECOVERY_UNCONFIRMED = "RECOVERY_UNCONFIRMED"  # Call concluded, insufficient evidence, deadline NOT yet passed
     ESCALATED = "ESCALATED"
-    DEADLINE_MISSED = "DEADLINE_MISSED"
+    DEADLINE_MISSED = "DEADLINE_MISSED"  # ONLY when actual current time has passed the deadline
     FAILED = "FAILED"
 
 

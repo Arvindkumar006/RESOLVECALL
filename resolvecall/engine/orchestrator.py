@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, time, timezone
 from typing import Any, Callable, Dict, List, Optional, Set
 
 from resolvecall.core.config import settings
@@ -86,6 +86,20 @@ class RecoveryOrchestrator:
         )
         self.audit_log.append(event)
         return incident
+
+    def _is_past_deadline(self, deadline_str: str) -> bool:
+        """Returns True only if the actual current wall-clock time has passed the incident deadline.
+        DEADLINE_MISSED must ONLY be set when this returns True.
+        """
+        now = datetime.now()
+        base_today = date.today()
+        try:
+            dt_deadline = PolicyEngine._parse_to_datetime(deadline_str, base_date=base_today)
+            if dt_deadline is None:
+                return False
+            return now > dt_deadline
+        except Exception:
+            return False
 
     async def execute_recovery(self, incident_id: str) -> Incident:
         """Executes the full real-time recovery workflow against CALL-E telephony."""
@@ -195,6 +209,7 @@ class RecoveryOrchestrator:
         max_polls = 60
         poll_interval = 4.0
         final_call_data: Dict[str, Any] = {}
+        call_connected = False  # Track whether the call actually connected to a live line
 
         for _ in range(max_polls):
             await asyncio.sleep(poll_interval)
@@ -215,13 +230,9 @@ class RecoveryOrchestrator:
             # Inspect transcript/activities if available
             raw_activities = status_res.get("activity") or status_res.get("activities") or res_block.get("transcript") or []
             if raw_activities:
-                formatted_turns = []
-                for a in raw_activities:
-                    speaker = a.get("speaker") or a.get("role") or a.get("kind") or "system"
-                    text = a.get("text") or a.get("content") or a.get("message") or ""
-                    if text:
-                        formatted_turns.append({"role": speaker, "text": text})
-                incident.transcript = formatted_turns
+                formatted_turns = _normalize_transcript_turns(raw_activities)
+                if formatted_turns:
+                    incident.transcript = formatted_turns
 
             # Handle live ringing / calling
             if calling_status in ("calling", "pending") or "ringing" in str(raw_activities).lower():
@@ -230,13 +241,19 @@ class RecoveryOrchestrator:
 
             # Handle active connected call
             if calling_status in ("connected", "in-progress", "active"):
+                call_connected = True
                 if incident.status != IncidentStatus.NEGOTIATING:
                     incident.status = IncidentStatus.NEGOTIATING
                     await self._emit_event(
                         incident_id,
                         "CALL_CONNECTED",
                         f"PSTN line connected to {incident.vendor}. Dynamic agent negotiation active.",
+                        {"call_connected": True},
                     )
+
+            # Also detect connection from CALL-E status response at higher levels
+            if cur_status in ("connected", "in-progress", "active") and not call_connected:
+                call_connected = True
 
             # Check for terminal call states (completed, ended, no answer, busy, failed)
             is_terminal = (
@@ -248,11 +265,21 @@ class RecoveryOrchestrator:
 
             if is_terminal:
                 terminal_reason = calling_status or cur_status or "Call Concluded"
+
+                # Detect if call actually connected by checking for speech/agent turns in transcript
+                if not call_connected and incident.transcript:
+                    # If there's bot speech, the call at least partially connected
+                    for turn in incident.transcript:
+                        role = (turn.get("role") or "").lower()
+                        if any(x in role for x in ("bot", "agent", "assistant", "caller", "resolvecall")):
+                            call_connected = True
+                            break
+
                 await self._emit_event(
                     incident_id,
                     "CALL_COMPLETED",
                     f"Telephony call concluded with status: {terminal_reason.upper()}.",
-                    {"status": terminal_reason, "summary": res_block.get("summary")},
+                    {"status": terminal_reason, "summary": res_block.get("summary"), "call_connected": call_connected},
                 )
                 break
 
@@ -264,7 +291,12 @@ class RecoveryOrchestrator:
             "Retrieving real conversation transcript and extracting structured verification evidence.",
         )
 
-        evidence = TranscriptExtractor.extract_evidence(final_call_data, incident.transcript)
+        evidence = TranscriptExtractor.extract_evidence(
+            final_call_data,
+            incident.transcript,
+            incident_id=incident.incident_id,
+            authorization_info=incident.authorization_info,
+        )
         incident.extracted_evidence = evidence.dict()
 
         await self._emit_event(
@@ -275,7 +307,8 @@ class RecoveryOrchestrator:
         )
 
         # 7. Deterministic Policy Evaluation
-        policy_eval = PolicyEngine.evaluate(incident, evidence)
+        # Pass call_connected so policy can generate accurate explanations
+        policy_eval = PolicyEngine.evaluate(incident, evidence, call_connected=call_connected)
         incident.policy_evaluation = policy_eval.dict()
 
         if policy_eval.decision == PolicyDecision.VALID:
@@ -288,23 +321,78 @@ class RecoveryOrchestrator:
                 f"Incident successfully recovered! Confirmed window '{win_str}' meets cutoff {incident.recovery_deadline}. {policy_eval.reason}",
                 policy_eval.dict(),
             )
+
         elif policy_eval.decision == PolicyDecision.INVALID:
+            # INVALID means a verified window was proposed but mathematically exceeds the deadline.
+            # This is a DEADLINE_CONSTRAINT_VIOLATION — not the same as actual clock-time passing.
             incident.status = IncidentStatus.DEADLINE_MISSED
-            incident.recovery_summary = f"RECOVERY FAILED — Negotiated time exceeds deadline ({policy_eval.reason})"
+            incident.recovery_summary = f"RECOVERY FAILED — Proposed delivery window '{evidence.agreed_window_end}' exceeds deadline ({policy_eval.reason})"
             await self._emit_event(
                 incident_id,
-                "DEADLINE_MISSED",
-                f"Recovery rejected by policy engine: {policy_eval.reason}",
-                policy_eval.dict(),
-            )
-        else:
-            incident.status = IncidentStatus.ESCALATED
-            incident.recovery_summary = "ESCALATED — Ambiguous resolution requires human supervisor intervention"
-            await self._emit_event(
-                incident_id,
-                "INCIDENT_ESCALATED",
-                f"Incident escalated to operations queue: {policy_eval.reason}",
+                "DEADLINE_CONSTRAINT_VIOLATION",
+                f"Proposed window violates operational deadline: {policy_eval.reason}",
                 policy_eval.dict(),
             )
 
+        else:
+            # AMBIGUOUS: evidence missing, call interrupted, or no window obtained.
+            # Check if the actual wall-clock time has NOW passed the deadline.
+            if self._is_past_deadline(incident.recovery_deadline):
+                # Real-world deadline has now expired with no resolution
+                incident.status = IncidentStatus.DEADLINE_MISSED
+                incident.recovery_summary = "DEADLINE MISSED — Recovery window elapsed without confirmed resolution"
+                await self._emit_event(
+                    incident_id,
+                    "DEADLINE_MISSED",
+                    f"Incident deadline '{incident.recovery_deadline}' has passed without a confirmed resolution. {policy_eval.reason}",
+                    policy_eval.dict(),
+                )
+            else:
+                # Deadline has NOT passed yet — incident is UNCONFIRMED, can be retried
+                incident.status = IncidentStatus.RECOVERY_UNCONFIRMED
+                incident.recovery_summary = "RECOVERY UNCONFIRMED — Insufficient evidence obtained. Retry or escalate."
+                await self._emit_event(
+                    incident_id,
+                    "RECOVERY_UNCONFIRMED",
+                    f"Recovery unconfirmed: {policy_eval.reason}",
+                    policy_eval.dict(),
+                )
+
         return incident
+
+
+def _normalize_transcript_turns(raw_activities: list) -> list:
+    """Normalizes raw CALL-E activity objects into clean transcript turns with correct speaker roles.
+
+    Speaker role mapping:
+      - Agent speech (bot, agent, assistant, caller)  → role: "RESOLVECALL AGENT"
+      - Human/recipient speech (human, callee, dispatcher, carrier, representative) → role: "OPERATIONS CONTACT"
+      - System/runtime events                          → role: "SYSTEM EVENT"
+    """
+    formatted = []
+    for a in raw_activities:
+        raw_role = str(
+            a.get("speaker") or a.get("role") or a.get("kind") or "system"
+        ).lower().strip()
+        text = (a.get("text") or a.get("content") or a.get("message") or "").strip()
+        if not text:
+            continue
+
+        # Strip "Bot is speaking:" prefix that CALL-E sometimes prepends to text
+        if text.lower().startswith("bot is speaking:"):
+            text = text[len("bot is speaking:"):].strip()
+            # If bot prefixed the text, we know it's agent speech
+            normalized_role = "RESOLVECALL AGENT"
+        elif any(x in raw_role for x in ("agent", "assistant", "bot", "caller", "resolvecall", "ai")):
+            normalized_role = "RESOLVECALL AGENT"
+        elif any(x in raw_role for x in ("human", "callee", "dispatcher", "carrier", "representative", "contact", "recipient", "user")):
+            normalized_role = "OPERATIONS CONTACT"
+        elif any(x in raw_role for x in ("system", "event", "realtime", "status", "call")):
+            normalized_role = "SYSTEM EVENT"
+        else:
+            # Default: if unknown and text looks like a runtime event description, treat as system
+            normalized_role = "SYSTEM EVENT"
+
+        formatted.append({"role": normalized_role, "text": text})
+
+    return formatted
