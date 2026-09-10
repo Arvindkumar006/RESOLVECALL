@@ -13,7 +13,7 @@
 
 <br/>
 
-![ResolveCall Mission Control Dashboard](assets/dashboard_preview.png)
+![ResolveCall Mission Control Dashboard](assets/resolvecall_enterprise_console.png)
 
 <br/>
 
