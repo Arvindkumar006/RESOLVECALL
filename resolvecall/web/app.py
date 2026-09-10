@@ -4,8 +4,9 @@ import asyncio
 import json
 import logging
 import os
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
-from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -13,7 +14,10 @@ from sse_starlette.sse import EventSourceResponse
 
 from resolvecall.core.config import settings
 from resolvecall.core.models import Incident, IncidentStatus
+from resolvecall.core.storage.auth_db import UserRecord, get_auth_repo
+from resolvecall.core.auth.security import decode_session_jwt
 from resolvecall.engine.orchestrator import RecoveryOrchestrator
+from resolvecall.web.auth_router import auth_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,6 +31,15 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# Security Headers Middleware
+@app.middleware("http")
+async def security_headers_middleware(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -36,6 +49,10 @@ app.add_middleware(
 )
 
 orchestrator = RecoveryOrchestrator()
+app.state.orchestrator = orchestrator
+
+# Mount Authentication Router
+app.include_router(auth_router)
 
 # Mount static directory
 static_dir = os.path.join(os.path.dirname(__file__), "static")
@@ -51,6 +68,38 @@ async def serve_dashboard():
         with open(index_path, "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
     return HTMLResponse(content="<h1>ResolveCall Dashboard Loading...</h1>")
+
+
+def get_operator_user(request: Request) -> UserRecord:
+    """Returns active session user if present, or default hackathon Operations Lead."""
+    try:
+        token = request.cookies.get(settings.SESSION_COOKIE_NAME)
+        if not token:
+            auth_header = request.headers.get("Authorization")
+            if auth_header and auth_header.startswith("Bearer "):
+                token = auth_header[7:].strip()
+        if token:
+            payload = decode_session_jwt(token)
+            repo = get_auth_repo()
+            session = repo.get_session_by_jti(payload.get("jti", ""))
+            if session and session.is_valid:
+                user = repo.get_user_by_id(session.user_id)
+                if user and user.is_active:
+                    return user
+    except Exception:
+        pass
+    return UserRecord(
+        id="operator-hackathon",
+        email="lead@resolvecall.io",
+        name="Operations Lead",
+        password_hash=None,
+        provider="console",
+        provider_subject=None,
+        role="operator",
+        is_active=True,
+        created_at=datetime.now(timezone.utc).isoformat(),
+        updated_at=datetime.now(timezone.utc).isoformat(),
+    )
 
 
 @app.post("/api/incidents/ingest", response_model=Dict[str, Any])
@@ -80,14 +129,37 @@ async def get_incident(incident_id: str):
 
 
 @app.post("/api/incidents/{incident_id}/recover")
-async def trigger_recovery(incident_id: str, background_tasks: BackgroundTasks):
-    """Triggers the real-time autonomous recovery workflow."""
+async def trigger_recovery(
+    incident_id: str,
+    background_tasks: BackgroundTasks,
+    request: Request,
+):
+    """Triggers the real-time autonomous recovery workflow with strict telephony authorization boundaries."""
+    user = get_operator_user(request)
     incident = orchestrator.incidents.get(incident_id)
     if not incident:
         raise HTTPException(status_code=404, detail="Incident not found")
 
+    # Telephony Authorization: Verify destination phone against E.164 authorized whitelist
+    if not settings.is_phone_authorized(incident.phone_number):
+        orchestrator.record_auth_audit_event(
+            "PERMISSION_DENIED",
+            f"Recovery call blocked: phone {incident.phone_number} is not in authorized whitelist.",
+            {"operator": user.email, "target_phone": incident.phone_number},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="PHONE_DESTINATION_UNAUTHORIZED",
+        )
+
     if incident.status in (IncidentStatus.CALLING, IncidentStatus.NEGOTIATING, IncidentStatus.PLANNING):
         return {"ok": False, "message": f"Recovery already in progress (Status: {incident.status})"}
+
+    orchestrator.record_auth_audit_event(
+        "RECOVERY_AUTHORIZED",
+        f"Autonomous recovery initiated for {incident_id} by operator {user.email}.",
+        {"operator": user.email, "role": user.role},
+    )
 
     background_tasks.add_task(orchestrator.execute_recovery, incident_id)
     return {"ok": True, "message": f"Autonomous recovery initiated for incident {incident_id}."}

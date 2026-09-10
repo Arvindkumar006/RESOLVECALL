@@ -39,6 +39,17 @@ class RecoveryOrchestrator:
         if queue in self._subscribers:
             self._subscribers.remove(queue)
 
+    def record_auth_audit_event(self, event_type: str, description: str, data: Optional[Dict[str, Any]] = None):
+        event = AuditEvent(
+            event_id=f"evt_{uuid.uuid4().hex[:8]}",
+            incident_id="AUTH",
+            event_type=event_type,
+            description=description,
+            data=data or {},
+        )
+        self.audit_log.append(event)
+        logger.info(f"AUDIT [AUTH] {event_type}: {description}")
+
     async def _emit_event(self, incident_id: str, event_type: str, description: str, data: Optional[Dict[str, Any]] = None):
         event = AuditEvent(
             event_id=f"evt_{uuid.uuid4().hex[:8]}",

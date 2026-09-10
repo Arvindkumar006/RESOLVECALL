@@ -231,10 +231,10 @@ class Application {
       }
     });
 
-    // Route Authentication Guard: Protected routes require authentication
-    if (!route.isPublic && !store.isAuthenticated) {
-      this.showToast("Authentication required. Please sign in to access Recovery Operations.", "info");
-      this.router.navigate("/login");
+    // Hackathon submission mode: Order is directly Landing Page -> Console
+    // No login/signup barrier for hackathon judges/evaluators
+    if (route.name === "login" || route.name === "signup" || route.name === "onboarding") {
+      this.router.navigate("/console");
       return;
     }
 
@@ -252,28 +252,6 @@ class Application {
         viewport.innerHTML = renderArchitecturePage();
       } else if (route.name === "security") {
         viewport.innerHTML = renderSecurityPage();
-      } else if (route.name === "login") {
-        viewport.innerHTML = renderLoginPage();
-        bindLoginEvents(viewport, (user) => {
-          store.loginUser(user);
-          this.showToast(`Signed in as ${user.name} (${user.providerName || user.provider})`, "success");
-          this.updateUserProfileInSidebar();
-          this.router.navigate("/console");
-        });
-      } else if (route.name === "signup") {
-        viewport.innerHTML = renderSignupPage();
-        bindSignupEvents(viewport, (user) => {
-          store.loginUser(user);
-          this.showToast(`Workspace created for ${user.name}`, "success");
-          this.updateUserProfileInSidebar();
-          this.router.navigate("/onboarding");
-        });
-      } else if (route.name === "onboarding") {
-        viewport.innerHTML = renderOnboardingPage(store.currentUser);
-        bindOnboardingEvents(viewport, () => {
-          this.showToast("Telephony authorization confirmed. Launching Mission Control.", "success");
-          this.router.navigate("/console");
-        });
       }
       
       this.stream.disconnect();
