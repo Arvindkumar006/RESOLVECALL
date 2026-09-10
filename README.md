@@ -4,7 +4,7 @@
 ### **Autonomous Operational Incident Recovery Telephony Agent**
 #### *Bridging Enterprise Digital Automation to Real-World Physical Operations over Telephone Lines*
 
-[![Hackathon](https://img.shields.io/badge/CALL--E%20Hackathon-$10,000%20Prize%20Pool-FF6B00?style=for-the-badge&logo=devpost&logoColor=white)](https://call-e.devpost.com/)
+
 [![Telephony Gateway](https://img.shields.io/badge/Telephony-CALL--E%20PSTN%20Gateway-06b6d4?style=for-the-badge&logo=twilio&logoColor=white)](https://github.com/CALLE-AI/call-e-integrations)
 [![Runtime Mode](https://img.shields.io/badge/Runtime-100%25%20Real--Time%20Production-10b981?style=for-the-badge&logo=checkmarx&logoColor=white)](#-the-real-time-production-mandate)
 [![Test Suite](https://img.shields.io/badge/Test%20Suite-8%2F8%20Passing%20(100%25)-3b82f6?style=for-the-badge&logo=pytest&logoColor=white)](tests/)
