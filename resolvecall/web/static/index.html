@@ -3,228 +3,1493 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ResolveCall — Autonomous Operational Incident Recovery Agent</title>
-  <meta name="description" content="Production-grade real-time autonomous operational incident recovery agent powered by CALL-E telephony.">
+  <title>ResolveCall — Autonomous Operational Recovery Telephony</title>
+  <meta name="description" content="When the API can't fix it, ResolveCall picks up the phone. Autonomous operational recovery through real-time AI phone calls powered by CALL-E.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
-  <!-- Ambient background glow -->
-  <div class="glow-sphere glow-1"></div>
-  <div class="glow-sphere glow-2"></div>
+<body class="theme-dark">
 
-  <div class="app-layout">
-    <!-- Top Bar -->
-    <header class="top-nav">
-      <div class="nav-brand">
-        <div class="logo-mark">
-          <div class="pulse-ring"></div>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Ambient background telemetry grid -->
+  <div class="bg-grid-overlay"></div>
+  <div class="glow-orb glow-top"></div>
+  <div class="glow-orb glow-bottom"></div>
+
+  <!-- Global Public Header (Nav for public pages & universal access) -->
+  <header class="public-navbar" id="public-header">
+    <div class="navbar-container">
+      <a href="/" class="nav-brand-link" data-route="/">
+        <div class="brand-badge-icon">
+          <span class="phone-pulse-ring"></span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
           </svg>
         </div>
-        <div>
-          <h1 class="brand-title">RESOLVECALL</h1>
-          <p class="brand-subtitle">CALL-E Autonomous Incident Recovery Telephony</p>
+        <div class="brand-text-block">
+          <span class="brand-name">RESOLVECALL</span>
+          <span class="brand-sub">AUTONOMOUS PHONE RECOVERY</span>
+        </div>
+      </a>
+
+      <nav class="public-nav-links" id="public-nav-links">
+        <a href="/" class="nav-link" data-route="/">Product</a>
+        <a href="/how-it-works" class="nav-link" data-route="/how-it-works">How It Works</a>
+        <a href="/architecture" class="nav-link" data-route="/architecture">Architecture</a>
+        <a href="/security" class="nav-link" data-route="/security">Security</a>
+      </nav>
+
+      <div class="public-nav-actions">
+        <div class="telephony-live-badge" id="global-calle-indicator">
+          <span class="pulse-dot"></span>
+          <span class="badge-label" id="global-calle-text">CALL-E Connected</span>
+        </div>
+        <a href="/console" class="btn btn-primary btn-command-center" data-route="/console">
+          <span>OPEN COMMAND CENTER</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Router View Port Container -->
+  <div id="view-viewport">
+
+    <!-- ========================================================= -->
+    <!-- VIEW 1: LANDING / PRODUCT PAGE (Route: /)                 -->
+    <!-- ========================================================= -->
+    <section id="view-landing" class="view-page active">
+      
+      <!-- HERO -->
+      <div class="landing-hero-section">
+        <div class="hero-container">
+          <div class="hero-eyebrow">
+            <span class="eyebrow-pill">PSTN AUTONOMOUS ACTUATOR</span>
+            <span class="eyebrow-text">When software encounters an offline operational barrier</span>
+          </div>
+
+          <h1 class="hero-title">
+            WHEN THE API CAN'T FIX IT,<br>
+            <span class="hero-title-highlight">RESOLVECALL PICKS UP THE PHONE.</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            Autonomous operational recovery through real-time AI phone calls.
+          </p>
+
+          <p class="hero-description">
+            When an operational failure reaches a vendor that has no API — only a phone number — ResolveCall plans the recovery, dials the authorized destination through CALL-E, negotiates with the live operational representative, extracts verified evidence, tests deterministic policies, and records the auditable outcome.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="/console" class="btn btn-hero-primary" data-route="/console">
+              <span>OPEN COMMAND CENTER</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="/how-it-works" class="btn btn-hero-secondary" data-route="/how-it-works">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+              <span>SEE HOW IT WORKS</span>
+            </a>
+          </div>
+
+          <!-- Sophisticated Interactive Phone Terminal Visual Centerpiece -->
+          <div class="hero-phone-terminal-wrapper">
+            <div class="phone-terminal-frame">
+              <div class="terminal-topbar">
+                <div class="terminal-dots">
+                  <span class="dot dot-red"></span>
+                  <span class="dot dot-yellow"></span>
+                  <span class="dot dot-green"></span>
+                </div>
+                <div class="terminal-channel-info">
+                  <span class="channel-pill"><span class="pulse-dot"></span> CALL-E PSTN VOICE ENGINE</span>
+                  <span class="channel-id">SYS-ROUTE-TELEPHONY-01</span>
+                </div>
+                <div class="terminal-status-tag">ENTERPRISE TELEPHONY ONLINE</div>
+              </div>
+
+              <div class="terminal-main-display">
+                <div class="terminal-grid">
+                  <!-- Phone Console Handset & Wave Column -->
+                  <div class="terminal-telephony-col">
+                    <div class="handset-visual-box">
+                      <div class="handset-icon-large">
+                        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                      </div>
+                      <div class="terminal-audio-waves">
+                        <span class="bar b1"></span><span class="bar b2"></span><span class="bar b3"></span>
+                        <span class="bar b4"></span><span class="bar b5"></span><span class="bar b6"></span>
+                        <span class="bar b7"></span><span class="bar b8"></span><span class="bar b9"></span>
+                      </div>
+                      <div class="terminal-state-title" id="hero-terminal-state">VOICE CHANNEL READY</div>
+                      <div class="terminal-state-sub" id="hero-terminal-sub">Authorized Destination Standby</div>
+                    </div>
+
+                    <!-- 4 Live System Indicators -->
+                    <div class="terminal-specs-strip">
+                      <div class="spec-cell">
+                        <span class="spec-k">CALL-E</span>
+                        <span class="spec-v highlight-green">CONNECTED</span>
+                      </div>
+                      <div class="spec-cell">
+                        <span class="spec-k">VOICE CHANNEL</span>
+                        <span class="spec-v highlight-cyan">READY</span>
+                      </div>
+                      <div class="spec-cell">
+                        <span class="spec-k">DESTINATION</span>
+                        <span class="spec-v">AUTHORIZED</span>
+                      </div>
+                      <div class="spec-cell">
+                        <span class="spec-k">RECOVERY ENGINE</span>
+                        <span class="spec-v highlight-green">ONLINE</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Telephony Signal Pipeline -->
+                  <div class="terminal-pipeline-col">
+                    <div class="pipeline-header">
+                      <span>AUTONOMOUS CALL PIPELINE</span>
+                      <span class="pipeline-code">LIVE PSTN FLOW</span>
+                    </div>
+
+                    <div class="signal-path-chain">
+                      <div class="path-node done">
+                        <span class="node-bullet">01</span>
+                        <div class="node-meta">
+                          <span class="node-title">INCIDENT INGESTION</span>
+                          <span class="node-detail">Operational failure payload received</span>
+                        </div>
+                      </div>
+                      <div class="path-connector active"></div>
+                      <div class="path-node done">
+                        <span class="node-bullet">02</span>
+                        <div class="node-meta">
+                          <span class="node-title">RECOVERY PLANNING</span>
+                          <span class="node-detail">Synthesizes constraints & objective</span>
+                        </div>
+                      </div>
+                      <div class="path-connector active"></div>
+                      <div class="path-node done">
+                        <span class="node-bullet">03</span>
+                        <div class="node-meta">
+                          <span class="node-title">CALL-E TELEPHONY</span>
+                          <span class="node-detail">PSTN carrier routing to authorized contact</span>
+                        </div>
+                      </div>
+                      <div class="path-connector active"></div>
+                      <div class="path-node done">
+                        <span class="node-bullet">04</span>
+                        <div class="node-meta">
+                          <span class="node-title">LIVE NEGOTIATION</span>
+                          <span class="node-detail">Conversational negotiation & commitment</span>
+                        </div>
+                      </div>
+                      <div class="path-connector active"></div>
+                      <div class="path-node done">
+                        <span class="node-bullet">05</span>
+                        <div class="node-meta">
+                          <span class="node-title">EVIDENCE EXTRACTION</span>
+                          <span class="node-detail">Isolates window, representative & reference</span>
+                        </div>
+                      </div>
+                      <div class="path-connector active"></div>
+                      <div class="path-node done">
+                        <span class="node-bullet">06</span>
+                        <div class="node-meta">
+                          <span class="node-title">DETERMINISTIC POLICY</span>
+                          <span class="node-detail">Mathematically verifies deadline margin</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Interactive 8-Stage Call Flow Breakdown -->
+                <div class="hero-callflow-interactive">
+                  <div class="callflow-bar-header">
+                    <span class="bar-title">INTERACTIVE RECOVERY LIFECYCLE</span>
+                    <span class="bar-hint">Click any stage to inspect operational guarantee</span>
+                  </div>
+
+                  <div class="callflow-stages-row">
+                    <button class="stage-btn active" data-stage-idx="0">01 INCIDENT</button>
+                    <button class="stage-btn" data-stage-idx="1">02 PLAN</button>
+                    <button class="stage-btn" data-stage-idx="2">03 DIAL</button>
+                    <button class="stage-btn" data-stage-idx="3">04 ANSWER</button>
+                    <button class="stage-btn" data-stage-idx="4">05 NEGOTIATE</button>
+                    <button class="stage-btn" data-stage-idx="5">06 EVIDENCE</button>
+                    <button class="stage-btn" data-stage-idx="6">07 VERIFY</button>
+                    <button class="stage-btn" data-stage-idx="7">08 RECOVER</button>
+                  </div>
+
+                  <div class="stage-detail-box" id="hero-stage-detail">
+                    <div class="stage-detail-num" id="stage-detail-num">STAGE 01 / 08</div>
+                    <h4 class="stage-detail-title" id="stage-detail-title">INCIDENT DETECTED</h4>
+                    <p class="stage-detail-text" id="stage-detail-text">
+                      An operational dependency (carrier, warehouse, facility, supplier) fails. The failure has a strict deadline and an authorized telephone contact.
+                    </p>
+                    <div class="stage-detail-record" id="stage-detail-record">
+                      <span class="record-k">System Records:</span>
+                      <span class="record-v" id="stage-detail-rec-val">Immutable incident payload, failure code, authorized contact, cutoff deadline.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="nav-actions">
-        <div class="status-chip" id="connection-status">
-          <span class="status-dot"></span>
-          <span class="status-text">CALL-E Connected</span>
+      <!-- SECTION: WHY A PHONE? -->
+      <div class="landing-section section-why-phone">
+        <div class="section-container">
+          <div class="section-badge">OPERATIONAL REALITY</div>
+          <h2 class="section-title">THE LAST MILE OF AUTOMATION IS OFTEN A PHONE CALL.</h2>
+          <p class="section-subtitle">
+            Modern platforms detect failures automatically in milliseconds, but critical vendors still terminate their operational control at a physical phone line.
+          </p>
+
+          <div class="why-phone-grid">
+            <div class="comparison-card card-api">
+              <div class="card-status-header">
+                <span class="route-tag">REST / WEBHOOK</span>
+                <span class="route-icon">⚡</span>
+              </div>
+              <h3 class="card-headline">API AVAILABLE</h3>
+              <div class="card-arrow">↓</div>
+              <div class="card-action">AUTOMATE DIRECTLY</div>
+              <p class="card-desc">
+                Ideal scenario. The system invokes an endpoint, updates state, and continues automatically.
+              </p>
+              <div class="card-footer-pill pill-neutral">Standard Software</div>
+            </div>
+
+            <div class="comparison-card card-no-api">
+              <div class="card-status-header">
+                <span class="route-tag">NO API EXPOSED</span>
+                <span class="route-icon">⚠️</span>
+              </div>
+              <h3 class="card-headline">EMAIL / TICKETING</h3>
+              <div class="card-arrow">↓</div>
+              <div class="card-action">HOURS OF LATENCY</div>
+              <p class="card-desc">
+                The incident enters an unread inbox or queue. The operational deadline passes before a human reads it.
+              </p>
+              <div class="card-footer-pill pill-danger">Deadline Missed</div>
+            </div>
+
+            <div class="comparison-card card-resolvecall featured">
+              <div class="card-status-header">
+                <span class="route-tag highlight">PHONE ONLY</span>
+                <span class="route-icon">📞</span>
+              </div>
+              <h3 class="card-headline">RESOLVECALL</h3>
+              <div class="card-arrow highlight">↓</div>
+              <div class="card-action highlight">AUTONOMOUS RECOVERY</div>
+              <p class="card-desc">
+                ResolveCall dials the authorized phone via CALL-E, negotiates with the operational contact, and extracts verified commitments before the deadline.
+              </p>
+              <div class="card-footer-pill pill-success">Target Recovered</div>
+            </div>
+          </div>
         </div>
-        <button class="btn btn-secondary" id="btn-open-ingest">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-          Ingest Real Incident
-        </button>
       </div>
-    </header>
 
-    <!-- Main Grid -->
-    <main class="dashboard-grid">
-      <!-- Left Column: Active Incidents & Ingestion -->
-      <section class="panel panel-incidents">
-        <div class="panel-header">
-          <div>
-            <h2 class="panel-title">Operational Incidents</h2>
-            <p class="panel-desc">Select an incident to monitor or trigger recovery</p>
-          </div>
-          <span class="badge" id="incident-count-badge">0 Active</span>
-        </div>
+      <!-- SECTION: CORE FEATURES (8 Enterprise Capabilities) -->
+      <div class="landing-section section-features">
+        <div class="section-container">
+          <div class="section-badge">SYSTEM CAPABILITIES</div>
+          <h2 class="section-title">ENGINEERED FOR HIGH-CONSEQUENCE INCIDENT RECOVERY</h2>
+          <p class="section-subtitle">
+            Every layer enforces operational integrity, strict isolation, and deterministic validation.
+          </p>
 
-        <div class="incident-list" id="incident-list">
-          <!-- Injected dynamically -->
-        </div>
-      </section>
-
-      <!-- Center & Right: Mission Control Monitor -->
-      <section class="panel panel-monitor">
-        <!-- Incident Status Banner -->
-        <div class="mission-header" id="active-incident-banner">
-          <div class="mission-title-group">
-            <div class="mission-tags">
-              <span class="incident-badge-status" id="active-status-badge">SELECT INCIDENT</span>
-              <span class="incident-id-tag" id="active-id-tag">--</span>
-              <span class="shipment-id-tag" id="active-shipment-tag">--</span>
-            </div>
-            <h2 class="mission-title" id="active-failure-title">No Incident Loaded</h2>
-            <p class="mission-cargo" id="active-cargo-desc">Upload or select an incident from the left queue.</p>
-          </div>
-
-          <div class="mission-controls">
-            <button class="btn btn-primary btn-call-trigger" id="btn-trigger-recovery" disabled>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              <span>Trigger CALL-E Recovery</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Lifecycle Stage Progression -->
-        <div class="stage-stepper">
-          <div class="step-node" data-stage="OPEN">
-            <div class="step-circle">1</div>
-            <div class="step-label">Open</div>
-          </div>
-          <div class="step-line"></div>
-          <div class="step-node" data-stage="PLANNING">
-            <div class="step-circle">2</div>
-            <div class="step-label">Planning</div>
-          </div>
-          <div class="step-line"></div>
-          <div class="step-node" data-stage="CALLING">
-            <div class="step-circle">3</div>
-            <div class="step-label">Calling</div>
-          </div>
-          <div class="step-line"></div>
-          <div class="step-node" data-stage="NEGOTIATING">
-            <div class="step-circle">4</div>
-            <div class="step-label">Negotiating</div>
-          </div>
-          <div class="step-line"></div>
-          <div class="step-node" data-stage="VALIDATING">
-            <div class="step-circle">5</div>
-            <div class="step-label">Validating</div>
-          </div>
-          <div class="step-line"></div>
-          <div class="step-node" data-stage="RECOVERED">
-            <div class="step-circle">6</div>
-            <div class="step-label">Outcome</div>
-          </div>
-        </div>
-
-        <!-- Operational Metrics Row -->
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-label">Operational Vendor</div>
-            <div class="metric-val" id="metric-vendor">--</div>
-            <div class="metric-sub" id="metric-phone">--</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Recovery Deadline</div>
-            <div class="metric-val accent-deadline" id="metric-deadline">--</div>
-            <div class="metric-sub">Strict cutoff limit</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">CALL-E Plan / Run ID</div>
-            <div class="metric-val code-font" id="metric-call-id">--</div>
-            <div class="metric-sub" id="metric-call-sub">PSTN Telephony Active</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Policy Validation</div>
-            <div class="metric-val" id="metric-policy-status">--</div>
-            <div class="metric-sub" id="metric-policy-reason">Deterministic check</div>
-          </div>
-        </div>
-
-        <!-- Two Split Columns: Live Conversation Transcript & Extracted Verification Proof -->
-        <div class="monitor-split">
-          <!-- Live Transcript Pane -->
-          <div class="sub-panel transcript-panel">
-            <div class="sub-panel-header">
-              <div class="title-with-wave">
-                <span class="waveform-anim" id="call-wave-indicator">
-                  <span></span><span></span><span></span><span></span>
-                </span>
-                <h3 class="sub-title">Real-Time Call Transcript</h3>
+          <div class="features-grid-8">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
               </div>
-              <span class="live-pill" id="live-audio-pill">IDLE</span>
-            </div>
-            <div class="transcript-feed" id="transcript-feed">
-              <div class="empty-state">No active call session. Trigger recovery to start CALL-E dialer.</div>
-            </div>
-          </div>
-
-          <!-- Structured Evidence & Policy Pane -->
-          <div class="sub-panel evidence-panel">
-            <div class="sub-panel-header">
-              <h3 class="sub-title">Verified Recovery Evidence</h3>
-              <span class="badge" id="evidence-badge">Awaiting Data</span>
+              <h3 class="feature-title">Real Incident Ingestion</h3>
+              <p class="feature-text">Recovers from actual operational incidents with arbitrary JSON payloads, failure codes, and vendor constraints.</p>
             </div>
 
-            <div class="evidence-content" id="evidence-container">
-              <div class="evidence-item">
-                <span class="ev-label">Confirmed Delivery Window:</span>
-                <span class="ev-value highlight-win" id="ev-window">--</span>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
               </div>
-              <div class="evidence-item">
-                <span class="ev-label">Carrier Dispatcher / Agent:</span>
-                <span class="ev-value" id="ev-dispatcher">--</span>
+              <h3 class="feature-title">Autonomous Recovery Planning</h3>
+              <p class="feature-text">Synthesizes clear conversational objectives, strict cutoff deadlines, and negotiation rules before dialing.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
               </div>
-              <div class="evidence-item">
-                <span class="ev-label">Authorization / Ticket Code:</span>
-                <span class="ev-value code-font" id="ev-auth">--</span>
+              <h3 class="feature-title">CALL-E Telephony</h3>
+              <p class="feature-text">Executes real PSTN phone calls through CALL-E carrier networks to reach physical dispatchers and managers.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               </div>
-              <div class="evidence-item">
-                <span class="ev-label">Recovery Action Summary:</span>
-                <span class="ev-value" id="ev-summary">--</span>
+              <h3 class="feature-title">Live Negotiation</h3>
+              <p class="feature-text">Handles natural human speech, clarifies ambiguous times, challenges unacceptable slots, and secures commitments.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              </div>
+              <h3 class="feature-title">Evidence Extraction</h3>
+              <p class="feature-text">Isolates representative speech only. Never hallucinates commitments or reuses input metadata as spoken proof.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <h3 class="feature-title">Deterministic Validation</h3>
+              <p class="feature-text">Mathematically validates agreed completion times against cutoff deadlines with minute-level precision.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </div>
+              <h3 class="feature-title">Auditable Recovery</h3>
+              <p class="feature-text">Maintains an append-only, tamper-evident audit ledger capturing every turn, state transition, and policy verdict.</p>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <h3 class="feature-title">Safe Failure Handling</h3>
+              <p class="feature-text">Never declares false success. Incomplete evidence results in honest UNCONFIRMED status for safe escalation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: THE PHONE IS THE ACTUATOR -->
+      <div class="landing-section section-terminal-spec">
+        <div class="section-container">
+          <div class="terminal-spec-banner">
+            <div class="spec-banner-header">
+              <span class="spec-tag">PHYSICAL TELEPHONY INTERFACE</span>
+              <h2 class="spec-title">THE PHONE IS THE ACTUATOR.</h2>
+              <p class="spec-sub">
+                Enterprise software usually stops at notifications. ResolveCall treats the PSTN telephone network as an active operational control surface.
+              </p>
+            </div>
+
+            <div class="spec-telephony-board">
+              <div class="telephony-board-header">
+                <div class="board-indicator">
+                  <span class="pulse-dot"></span>
+                  <span>CALL-E TELEPHONY</span>
+                </div>
+                <div class="board-chip">CARRIER CLASS: ENTERPRISE PSTN</div>
               </div>
 
-              <div class="quotes-block">
-                <div class="quotes-header">Auditable Conversation Quotes:</div>
-                <div class="quotes-list" id="ev-quotes">
-                  <span class="text-muted">Evidence quotes will be extracted live from transcript.</span>
+              <div class="telephony-board-grid">
+                <div class="board-row">
+                  <span class="k">Connection</span>
+                  <span class="v success-text">READY</span>
+                </div>
+                <div class="board-row">
+                  <span class="k">Destination</span>
+                  <span class="v">AUTHORIZED NUMBERS ONLY</span>
+                </div>
+                <div class="board-row">
+                  <span class="k">Channel</span>
+                  <span class="v">PSTN FULL-DUPLEX VOICE</span>
+                </div>
+                <div class="board-row">
+                  <span class="k">Conversation</span>
+                  <span class="v">LIVE WHEN ACTIVE</span>
+                </div>
+                <div class="board-row">
+                  <span class="k">Evidence</span>
+                  <span class="v">EXTRACTED EXCLUSIVELY FROM DIALOGUE</span>
+                </div>
+                <div class="board-row">
+                  <span class="k">Policy</span>
+                  <span class="v">DETERMINISTIC DEADLINE EVALUATION</span>
+                </div>
+                <div class="board-row">
+                  <span class="k">Audit</span>
+                  <span class="v">APPEND-ONLY OPERATIONAL LEDGER</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: ARCHITECTURE PREVIEW -->
+      <div class="landing-section section-arch-preview">
+        <div class="section-container">
+          <div class="section-badge">SYSTEM STACK</div>
+          <h2 class="section-title">MODULAR INCIDENT RECOVERY PIPELINE</h2>
+          <p class="section-subtitle">
+            Deterministic separation between planning, telephony execution, evidence extraction, and policy enforcement.
+          </p>
+
+          <div class="arch-stack-visual">
+            <div class="arch-layer-bar" data-layer="sys">
+              <span class="layer-code">LAYER 01</span>
+              <span class="layer-name">OPERATIONAL SYSTEM</span>
+              <span class="layer-desc">Incident event emitter / ERP / Warehouse management</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer-bar" data-layer="inc">
+              <span class="layer-code">LAYER 02</span>
+              <span class="layer-name">INCIDENT ENGINE</span>
+              <span class="layer-desc">Payload parsing, schema validation & state tracking</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer-bar" data-layer="plan">
+              <span class="layer-code">LAYER 03</span>
+              <span class="layer-name">RECOVERY PLANNER</span>
+              <span class="layer-desc">Objective synthesis & negotiation boundary formation</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer-bar highlight-call" data-layer="calle">
+              <span class="layer-code">LAYER 04</span>
+              <span class="layer-name">CALL-E TELEPHONY</span>
+              <span class="layer-desc">PSTN carrier routing, full-duplex speech & turn streaming</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer-bar" data-layer="contact">
+              <span class="layer-code">LAYER 05</span>
+              <span class="layer-name">OPERATIONS CONTACT</span>
+              <span class="layer-desc">Physical dispatcher, dock manager or driver verbally committing</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer-bar" data-layer="ev">
+              <span class="layer-code">LAYER 06</span>
+              <span class="layer-name">EVIDENCE ENGINE</span>
+              <span class="layer-desc">Strict extraction of delivery window, representative & auth code</span>
+            </div>
+            <div class="arch-arrow">↓</div>
+            <div class="arch-layer-bar" data-layer="pol">
+              <span class="layer-code">LAYER 07</span>
+              <span class="layer-name">POLICY ENGINE</span>
+              <span class="layer-desc">Deterministic deadline validation & recovery confirmation</span>
+            </div>
+          </div>
+
+          <div class="landing-footer-cta">
+            <a href="/console" class="btn btn-hero-primary" data-route="/console">
+              <span>LAUNCH MISSION CONTROL CONSOLE</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================= -->
+    <!-- VIEW 2: HOW IT WORKS (Route: /how-it-works)               -->
+    <!-- ========================================================= -->
+    <section id="view-how-it-works" class="view-page">
+      <div class="page-container">
+        <div class="page-header">
+          <div class="page-badge">OPERATIONAL WORKFLOW</div>
+          <h1 class="page-title">HOW AUTONOMOUS PHONE RECOVERY WORKS</h1>
+          <p class="page-desc">
+            A step-by-step walkthrough of how ResolveCall takes an offline failure and resolves it through an auditable phone conversation.
+          </p>
+        </div>
+
+        <div class="steps-timeline">
+          <!-- Step 1 -->
+          <div class="timeline-step">
+            <div class="step-marker">
+              <span class="step-num">01</span>
+              <div class="marker-line"></div>
+            </div>
+            <div class="step-body">
+              <h3 class="step-title">Incident Ingested</h3>
+              <div class="step-subgrid">
+                <div class="step-col">
+                  <span class="step-col-label">WHAT HAPPENS</span>
+                  <p>An operational incident payload arrives via API with failure description, cutoff deadline, and authorized contact phone number.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHY IT MATTERS</span>
+                  <p>Establishes the immutable baseline constraints and target resolution deadline before any action is attempted.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHAT RESOLVECALL RECORDS</span>
+                  <p class="code-text">INCIDENT_RECEIVED event with raw payload, timestamp, and initial status = OPEN.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="timeline-step">
+            <div class="step-marker">
+              <span class="step-num">02</span>
+              <div class="marker-line"></div>
+            </div>
+            <div class="step-body">
+              <h3 class="step-title">Recovery Plan Formulated</h3>
+              <div class="step-subgrid">
+                <div class="step-col">
+                  <span class="step-col-label">WHAT HAPPENS</span>
+                  <p>The planner parses constraints, extracts access PINs/instructions, and defines negotiation objectives and challenge conditions.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHY IT MATTERS</span>
+                  <p>Prevents the telephony agent from accepting invalid windows or promising terms outside operational authority.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHAT RESOLVECALL RECORDS</span>
+                  <p class="code-text">PLAN_GENERATED with target prompt, objective, and strict validation boundary.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="timeline-step">
+            <div class="step-marker">
+              <span class="step-num">03</span>
+              <div class="marker-line"></div>
+            </div>
+            <div class="step-body">
+              <h3 class="step-title">CALL-E Telephony Dials</h3>
+              <div class="step-subgrid">
+                <div class="step-col">
+                  <span class="step-col-label">WHAT HAPPENS</span>
+                  <p>CALL-E executes an outbound PSTN call to the authorized vendor phone number and streams real-time connection state.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHY IT MATTERS</span>
+                  <p>Bypasses missing vendor APIs by meeting the human contact on standard voice telephony.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHAT RESOLVECALL RECORDS</span>
+                  <p class="code-text">CALL_INITIATED and CALL_RUNNING with unique CALL-E Run ID and PSTN timestamps.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="timeline-step">
+            <div class="step-marker">
+              <span class="step-num">04</span>
+              <div class="marker-line"></div>
+            </div>
+            <div class="step-body">
+              <h3 class="step-title">Agent Negotiates Live</h3>
+              <div class="step-subgrid">
+                <div class="step-col">
+                  <span class="step-col-label">WHAT HAPPENS</span>
+                  <p>The agent explains the shipment emergency, states authorized codes, requests an expedited delivery window, and gathers dispatcher name.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHY IT MATTERS</span>
+                  <p>Handles real human interruptions, clarifications, and counter-offers gracefully.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHAT RESOLVECALL RECORDS</span>
+                  <p class="code-text">Complete chronological transcript with tagged speaker roles and latency markers.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="timeline-step">
+            <div class="step-marker">
+              <span class="step-num">05</span>
+              <div class="marker-line"></div>
+            </div>
+            <div class="step-body">
+              <h3 class="step-title">Evidence Isolated & Extracted</h3>
+              <div class="step-subgrid">
+                <div class="step-col">
+                  <span class="step-col-label">WHAT HAPPENS</span>
+                  <p>The extractor analyzes the conversation transcript, using ONLY the recipient's speech to parse delivery window, name, and confirmation code.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHY IT MATTERS</span>
+                  <p>Guarantees zero evidence hallucination. Agent turns and input metadata are strictly forbidden from being counted as proof.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHAT RESOLVECALL RECORDS</span>
+                  <p class="code-text">EVIDENCE_EXTRACTED with structured fields and verbatim verbatim conversational quotes.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 6 -->
+          <div class="timeline-step">
+            <div class="step-marker">
+              <span class="step-num">06</span>
+              <div class="marker-line"></div>
+            </div>
+            <div class="step-body">
+              <h3 class="step-title">Deterministic Policy Evaluated</h3>
+              <div class="step-subgrid">
+                <div class="step-col">
+                  <span class="step-col-label">WHAT HAPPENS</span>
+                  <p>The policy engine mathematically computes whether the promised window finishes prior to the cutoff deadline.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHY IT MATTERS</span>
+                  <p>An AI promise is meaningless without deterministic verification. If window > deadline, status = INVALID.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHAT RESOLVECALL RECORDS</span>
+                  <p class="code-text">POLICY_EVALUATED with decision (VALID / INVALID / AMBIGUOUS) and exact minute margin.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 7 -->
+          <div class="timeline-step">
+            <div class="step-marker">
+              <span class="step-num">07</span>
+              <div class="marker-line last"></div>
+            </div>
+            <div class="step-body">
+              <h3 class="step-title">Recovery Recorded & Confirmed</h3>
+              <div class="step-subgrid">
+                <div class="step-col">
+                  <span class="step-col-label">WHAT HAPPENS</span>
+                  <p>The incident transitions to RECOVERED or RECOVERY_UNCONFIRMED based solely on verified policy outcome.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHY IT MATTERS</span>
+                  <p>Enterprise stakeholders receive guaranteed clarity: either the shipment is saved with proof, or flagged for immediate escalation.</p>
+                </div>
+                <div class="step-col">
+                  <span class="step-col-label">WHAT RESOLVECALL RECORDS</span>
+                  <p class="code-text">Final state locked into immutable audit trail; downstream systems notified via SSE.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================= -->
+    <!-- VIEW 3: ARCHITECTURE (Route: /architecture)               -->
+    <!-- ========================================================= -->
+    <section id="view-architecture" class="view-page">
+      <div class="page-container">
+        <div class="page-header">
+          <div class="page-badge">TECHNICAL SYSTEM ARCHITECTURE</div>
+          <h1 class="page-title">RESOLVECALL SYSTEM DESIGN</h1>
+          <p class="page-desc">
+            A high-assurance architecture isolating PSTN carrier telephony, LLM dialogue planning, deterministic extraction, and rule evaluation.
+          </p>
+        </div>
+
+        <div class="arch-layers-grid">
+          <!-- Layer 1 -->
+          <div class="arch-layer-card">
+            <div class="layer-card-header">
+              <span class="tag-mono">API</span>
+              <span class="layer-badge">INGESTION LAYER</span>
+            </div>
+            <h3 class="layer-title">Incident Management & Validation</h3>
+            <p class="layer-desc">Exposes REST endpoints for incident ingestion, status query, and audit retrieval. Normalizes arbitrary vendor payloads into canonical Incident domain models.</p>
+            <div class="layer-tech-tags">
+              <span>FastAPI</span><span>Pydantic v2</span><span>Uvicorn</span>
+            </div>
+          </div>
+
+          <!-- Layer 2 -->
+          <div class="arch-layer-card">
+            <div class="layer-card-header">
+              <span class="tag-mono">PLANNER</span>
+              <span class="layer-badge">INTELLIGENCE LAYER</span>
+            </div>
+            <h3 class="layer-title">Recovery Strategy Planner</h3>
+            <p class="layer-desc">Translates raw operational failures into specific phone-call objectives, strict negotiation boundaries, and required evidence tokens.</p>
+            <div class="layer-tech-tags">
+              <span>RecoveryPlanner</span><span>Constraint Extraction</span>
+            </div>
+          </div>
+
+          <!-- Layer 3 -->
+          <div class="arch-layer-card">
+            <div class="layer-card-header">
+              <span class="tag-mono">PSTN / CALL-E</span>
+              <span class="layer-badge">TELEPHONY LAYER</span>
+            </div>
+            <h3 class="layer-title">Carrier-Grade Voice Execution</h3>
+            <p class="layer-desc">Connects via CALL-E APIs to place live telephone calls through PSTN infrastructure to authorized vendor destinations with full-duplex speech.</p>
+            <div class="layer-tech-tags">
+              <span>CalleClient</span><span>Bearer Auth</span><span>PSTN Outbound</span>
+            </div>
+          </div>
+
+          <!-- Layer 4 -->
+          <div class="arch-layer-card">
+            <div class="layer-card-header">
+              <span class="tag-mono">SSE</span>
+              <span class="layer-badge">REAL-TIME STREAMING</span>
+            </div>
+            <h3 class="layer-title">Event-Driven Telemetry Bus</h3>
+            <p class="layer-desc">Maintains non-blocking Server-Sent Events (SSE) connections to push live telephony events, speaker turns, and audit state updates to dashboards.</p>
+            <div class="layer-tech-tags">
+              <span>asyncio.Queue</span><span>EventSource</span><span>SSE-Starlette</span>
+            </div>
+          </div>
+
+          <!-- Layer 5 -->
+          <div class="arch-layer-card">
+            <div class="layer-card-header">
+              <span class="tag-mono">EXTRACTOR</span>
+              <span class="layer-badge">EVIDENCE LAYER</span>
+            </div>
+            <h3 class="layer-title">Isolated Dialogue Extraction</h3>
+            <p class="layer-desc">Enforces strict isolation rules: agent speech is never used as evidence; incident input metadata is blocked from being extracted as authorization codes.</p>
+            <div class="layer-tech-tags">
+              <span>TranscriptExtractor</span><span>Speaker Role Isolation</span>
+            </div>
+          </div>
+
+          <!-- Layer 6 -->
+          <div class="arch-layer-card">
+            <div class="layer-card-header">
+              <span class="tag-mono">POLICY</span>
+              <span class="layer-badge">VERIFICATION LAYER</span>
+            </div>
+            <h3 class="layer-title">Deterministic Policy Engine</h3>
+            <p class="layer-desc">Zero hallucination guarantee. Evaluates negotiated delivery windows against deadline cutoffs using deterministic 24-hour time math.</p>
+            <div class="layer-tech-tags">
+              <span>PolicyEngine</span><span>Time Boundary Math</span>
+            </div>
+          </div>
+
+          <!-- Layer 7 -->
+          <div class="arch-layer-card">
+            <div class="layer-card-header">
+              <span class="tag-mono">AUDIT</span>
+              <span class="layer-badge">GOVERNANCE LAYER</span>
+            </div>
+            <h3 class="layer-title">Immutable Operational Ledger</h3>
+            <p class="layer-desc">Records every state transition, plan formulation, raw call turn, and policy determination into an append-only audit trail.</p>
+            <div class="layer-tech-tags">
+              <span>AuditEvent</span><span>Append-Only</span><span>ISO-8601</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================= -->
+    <!-- VIEW 4: SECURITY & TRUST (Route: /security)               -->
+    <!-- ========================================================= -->
+    <section id="view-security" class="view-page">
+      <div class="page-container">
+        <div class="page-header">
+          <div class="page-badge">GOVERNANCE & TRUST</div>
+          <h1 class="page-title">ENTERPRISE TELEPHONY SECURITY</h1>
+          <p class="page-desc">
+            Autonomous phone recovery requires strict access controls, zero secret leakage, and deterministic decision boundaries.
+          </p>
+        </div>
+
+        <div class="security-cards-grid">
+          <div class="security-card">
+            <div class="sec-icon">🔒</div>
+            <h3 class="sec-title">Authorized Phone Destinations</h3>
+            <p class="sec-text">
+              Calls are strictly routed only to phone numbers pre-registered and authorized within the incident schema. Dialpads are strictly locked to prevent arbitrary dialing.
+            </p>
+          </div>
+
+          <div class="security-card">
+            <div class="sec-icon">🛡️</div>
+            <h3 class="sec-title">Secret & Key Isolation</h3>
+            <p class="sec-text">
+              CALL-E bearer tokens, telephony provider credentials, and access keys reside exclusively in the server environment. The frontend never receives private credentials.
+            </p>
+          </div>
+
+          <div class="security-card">
+            <div class="sec-icon">📐</div>
+            <h3 class="sec-title">Deterministic Policy Validation</h3>
+            <p class="sec-text">
+              LLMs cannot declare an incident recovered. Recovery is determined solely by mathematical policy evaluation verifying that agreed windows meet deadline constraints.
+            </p>
+          </div>
+
+          <div class="security-card">
+            <div class="sec-icon">📜</div>
+            <h3 class="sec-title">Immutable Auditability</h3>
+            <p class="sec-text">
+              Every turn, dialed number, status transition, and policy verdict is recorded in an append-only operational audit log suitable for enterprise compliance.
+            </p>
+          </div>
+
+          <div class="security-card">
+            <div class="sec-icon">🔍</div>
+            <h3 class="sec-title">Conversational Evidence Isolation</h3>
+            <p class="sec-text">
+              To prevent hallucinated recoveries, agent speech is completely excluded from extraction. Only the human operational contact's words count as proof.
+            </p>
+          </div>
+
+          <div class="security-card">
+            <div class="sec-icon">⚡</div>
+            <h3 class="sec-title">Safe Failure Modes</h3>
+            <p class="sec-text">
+              If a call disconnects, drops, or yields ambiguous information, ResolveCall defaults safely to RECOVERY_UNCONFIRMED, never falsely claiming success.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================= -->
+    <!-- VIEW 5: MISSION CONTROL CONSOLE WORKSPACE                 -->
+    <!-- (Routes: /console, /incidents, /calls, /recoveries, etc.) -->
+    <!-- ========================================================= -->
+    <section id="view-console-workspace" class="view-page">
+      <div class="console-layout">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="console-sidebar">
+          <div class="sidebar-brand">
+            <div class="brand-badge-icon sm">
+              <span class="phone-pulse-ring"></span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            </div>
+            <span class="sidebar-brand-name">MISSION CONTROL</span>
+          </div>
+
+          <nav class="sidebar-nav">
+            <div class="nav-section-label">OVERVIEW</div>
+            <a href="/console" class="sidebar-link active" data-route="/console">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              <span>Command Center</span>
+            </a>
+
+            <div class="nav-section-label">OPERATIONS</div>
+            <a href="/incidents" class="sidebar-link" data-route="/incidents">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span>Incidents Queue</span>
+              <span class="nav-count-badge" id="side-inc-count">0</span>
+            </a>
+            <a href="/calls" class="sidebar-link" data-route="/calls">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              <span>Call Operations</span>
+            </a>
+            <a href="/recoveries" class="sidebar-link" data-route="/recoveries">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <span>Recoveries</span>
+            </a>
+
+            <div class="nav-section-label">INTELLIGENCE</div>
+            <a href="/plans" class="sidebar-link" data-route="/plans">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              <span>Recovery Plans</span>
+            </a>
+            <a href="/evidence" class="sidebar-link" data-route="/evidence">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>Evidence Ledger</span>
+            </a>
+
+            <div class="nav-section-label">GOVERNANCE</div>
+            <a href="/audit" class="sidebar-link" data-route="/audit">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              <span>Audit Trail</span>
+            </a>
+
+            <div class="nav-section-label">SYSTEM</div>
+            <a href="/settings" class="sidebar-link" data-route="/settings">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Preferences</span>
+            </a>
+          </nav>
+
+          <div class="sidebar-footer">
+            <a href="/" class="btn-back-product" data-route="/">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              <span>Back to Product</span>
+            </a>
+          </div>
+        </aside>
+
+        <!-- CONSOLE MAIN BODY -->
+        <div class="console-main">
+          <!-- CONSOLE TOPBAR -->
+          <header class="console-topbar">
+            <div class="topbar-left">
+              <h2 class="view-headline" id="current-view-title">Command Center</h2>
+              <span class="topbar-tag">AUTONOMOUS OPERATIONS</span>
+            </div>
+
+            <div class="topbar-right">
+              <div class="telephony-live-badge" id="topbar-calle-status">
+                <span class="pulse-dot"></span>
+                <span class="badge-label" id="topbar-calle-text">CALL-E Connected</span>
+              </div>
+
+              <!-- Quick Incident Selector -->
+              <div class="incident-quick-selector">
+                <label for="select-active-incident" class="sr-only">Active Incident</label>
+                <select id="select-active-incident" class="form-select-sm" title="Active Incident Selector">
+                  <option value="">Select Incident...</option>
+                </select>
+              </div>
+
+              <button class="btn btn-secondary btn-sm" id="btn-open-ingest">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                <span>Ingest Incident</span>
+              </button>
+            </div>
+          </header>
+
+          <!-- CONSOLE SUBVIEWS (Controlled by router) -->
+          <div class="console-content-container">
+
+            <!-- ============================================== -->
+            <!-- SUBVIEW A: COMMAND CENTER OVERVIEW (/console)  -->
+            <!-- ============================================== -->
+            <div id="subview-console-overview" class="subview-panel active">
+              <!-- KPI Strip (Strictly from real backend data) -->
+              <div class="kpi-strip">
+                <div class="kpi-card">
+                  <div class="kpi-top">
+                    <span class="kpi-label">ACTIVE INCIDENTS</span>
+                    <span class="kpi-icon">📋</span>
+                  </div>
+                  <div class="kpi-val" id="kpi-active-incidents">0</div>
+                  <div class="kpi-sub">Total operational incidents</div>
+                </div>
+
+                <div class="kpi-card">
+                  <div class="kpi-top">
+                    <span class="kpi-label">ACTIVE CALLS</span>
+                    <span class="kpi-icon">📞</span>
+                  </div>
+                  <div class="kpi-val highlight-cyan" id="kpi-active-calls">0</div>
+                  <div class="kpi-sub">PSTN telephony connected</div>
+                </div>
+
+                <div class="kpi-card">
+                  <div class="kpi-top">
+                    <span class="kpi-label">RECOVERED</span>
+                    <span class="kpi-icon">✅</span>
+                  </div>
+                  <div class="kpi-val highlight-green" id="kpi-recovered">0</div>
+                  <div class="kpi-sub">Verified against policy</div>
+                </div>
+
+                <div class="kpi-card">
+                  <div class="kpi-top">
+                    <span class="kpi-label">RECOVERY UNCONFIRMED</span>
+                    <span class="kpi-icon">⏳</span>
+                  </div>
+                  <div class="kpi-val highlight-amber" id="kpi-unconfirmed">0</div>
+                  <div class="kpi-sub">Awaiting evidence / retry</div>
+                </div>
+              </div>
+
+              <!-- Main Command Center Split: Live Telephony + Live Incident Feed -->
+              <div class="overview-grid">
+                
+                <!-- LIVE TELEPHONY PANEL (Hero Component) -->
+                <div class="telephony-command-card">
+                  <div class="card-header-styled">
+                    <div class="header-left-title">
+                      <div class="call-indicator-dot" id="telephony-indicator-dot"></div>
+                      <h3>LIVE TELEPHONY PANEL</h3>
+                    </div>
+                    <span class="status-pill-sub" id="telephony-status-pill">VOICE CHANNEL READY</span>
+                  </div>
+
+                  <div class="telephony-card-body">
+                    <div class="telephony-screen-box">
+                      <div class="screen-meta-row">
+                        <span class="screen-label">CALL-E RUN ID</span>
+                        <span class="screen-code" id="telephony-run-id">--</span>
+                      </div>
+                      <div class="screen-meta-row">
+                        <span class="screen-label">DESTINATION</span>
+                        <span class="screen-code" id="telephony-dest-phone">Authorized Contact</span>
+                      </div>
+                      <div class="screen-meta-row">
+                        <span class="screen-label">CALL STATE</span>
+                        <span class="screen-state highlight-cyan" id="telephony-call-state">IDLE</span>
+                      </div>
+
+                      <div class="screen-wave-display">
+                        <div class="live-wave-bars" id="telephony-live-wave">
+                          <span></span><span></span><span></span><span></span><span></span>
+                          <span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 3x4 Telephony Dialpad with Keypad Feedback -->
+                    <div class="dialpad-container">
+                      <div class="dialpad-grid">
+                        <button class="dial-key" data-key="1"><span class="key-num">1</span><span class="key-sub"></span></button>
+                        <button class="dial-key" data-key="2"><span class="key-num">2</span><span class="key-sub">ABC</span></button>
+                        <button class="dial-key" data-key="3"><span class="key-num">3</span><span class="key-sub">DEF</span></button>
+                        <button class="dial-key" data-key="4"><span class="key-num">4</span><span class="key-sub">GHI</span></button>
+                        <button class="dial-key" data-key="5"><span class="key-num">5</span><span class="key-sub">JKL</span></button>
+                        <button class="dial-key" data-key="6"><span class="key-num">6</span><span class="key-sub">MNO</span></button>
+                        <button class="dial-key" data-key="7"><span class="key-num">7</span><span class="key-sub">PQRS</span></button>
+                        <button class="dial-key" data-key="8"><span class="key-num">8</span><span class="key-sub">TUV</span></button>
+                        <button class="dial-key" data-key="9"><span class="key-num">9</span><span class="key-sub">WXYZ</span></button>
+                        <button class="dial-key" data-key="*"><span class="key-num">*</span><span class="key-sub"></span></button>
+                        <button class="dial-key" data-key="0"><span class="key-num">0</span><span class="key-sub">+</span></button>
+                        <button class="dial-key" data-key="#"><span class="key-num">#</span><span class="key-sub"></span></button>
+                      </div>
+
+                      <!-- Strictly compliant with Requirement 19: DTMF Control Disabled -->
+                      <div class="dialpad-guard-notice">
+                        <span class="guard-lock-icon">🔒</span>
+                        <span>DTMF CONTROL NOT AVAILABLE FOR THIS CALL</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- LIVE INCIDENTS FEED PANEL -->
+                <div class="incident-feed-card">
+                  <div class="card-header-styled">
+                    <div class="header-left-title">
+                      <h3>OPERATIONAL INCIDENT QUEUE</h3>
+                    </div>
+                    <span class="feed-count-badge" id="feed-count-label">0 Ingested</span>
+                  </div>
+
+                  <div class="incident-table-wrapper">
+                    <table class="incident-feed-table">
+                      <thead>
+                        <tr>
+                          <th>INCIDENT ID</th>
+                          <th>FAILURE</th>
+                          <th>VENDOR</th>
+                          <th>DEADLINE</th>
+                          <th>STATUS</th>
+                          <th>ACTION</th>
+                        </tr>
+                      </thead>
+                      <tbody id="overview-incident-tbody">
+                        <tr><td colspan="6" class="empty-state-cell">No incidents ingested. Click "Ingest Incident" above.</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- Audit Trail Stream -->
-            <div class="audit-stream-block">
-              <h4 class="audit-stream-title">Immutable Real-Time Audit Log</h4>
-              <div class="audit-feed" id="audit-feed">
-                <!-- Injected live -->
+            <!-- ============================================== -->
+            <!-- SUBVIEW B: INCIDENTS QUEUE (/incidents)        -->
+            <!-- ============================================== -->
+            <div id="subview-incidents-list" class="subview-panel">
+              <div class="panel-inner-header">
+                <div>
+                  <h3 class="inner-title">All Operational Incidents</h3>
+                  <p class="inner-sub">Filter and inspect all ingested incidents.</p>
+                </div>
+                <div class="inner-actions">
+                  <button class="btn btn-secondary btn-sm" id="btn-refresh-incidents">Refresh</button>
+                </div>
+              </div>
+
+              <div class="incidents-card-grid" id="all-incidents-cards">
+                <!-- Injected dynamically -->
               </div>
             </div>
+
+            <!-- ============================================== -->
+            <!-- SUBVIEW C: FLAGSHIP INCIDENT DETAIL            -->
+            <!-- (Route: /incidents/:id)                        -->
+            <!-- ============================================== -->
+            <div id="subview-incident-detail" class="subview-panel">
+              <!-- Detail Banner -->
+              <div class="flagship-header-card">
+                <div class="flagship-meta-left">
+                  <div class="flagship-tags">
+                    <span class="incident-badge-status" id="flagship-status-badge">SELECT INCIDENT</span>
+                    <span class="incident-id-tag" id="flagship-id-tag">--</span>
+                    <span class="shipment-id-tag" id="flagship-shipment-tag">--</span>
+                  </div>
+                  <h2 class="flagship-title" id="flagship-failure-title">No Incident Loaded</h2>
+                  <p class="flagship-cargo" id="flagship-cargo-desc">Select an incident from the queue or command center.</p>
+                </div>
+
+                <div class="flagship-meta-right">
+                  <!-- RECOVERY TRIGGER BUTTON — Strictly preserved per Rule 37 -->
+                  <button class="btn btn-primary btn-call-trigger" id="btn-trigger-recovery" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <span>Trigger CALL-E Recovery</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Lifecycle Stepper -->
+              <div class="stage-stepper">
+                <div class="step-node" data-stage="OPEN">
+                  <div class="step-circle">1</div>
+                  <div class="step-label">Received</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step-node" data-stage="PLANNING">
+                  <div class="step-circle">2</div>
+                  <div class="step-label">Planned</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step-node" data-stage="CALLING">
+                  <div class="step-circle">3</div>
+                  <div class="step-label">Called</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step-node" data-stage="NEGOTIATING">
+                  <div class="step-circle">4</div>
+                  <div class="step-label">Negotiated</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step-node" data-stage="VALIDATING">
+                  <div class="step-circle">5</div>
+                  <div class="step-label">Verified</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step-node" data-stage="RECOVERED">
+                  <div class="step-circle">6</div>
+                  <div class="step-label">Outcome</div>
+                </div>
+              </div>
+
+              <!-- 3-Column Operational Workspace -->
+              <div class="operational-workspace-3col">
+                
+                <!-- COLUMN 1: INCIDENT METADATA -->
+                <div class="col-card col-incident">
+                  <div class="col-header">
+                    <h4>1. INCIDENT SPECIFICATION</h4>
+                  </div>
+                  <div class="col-body">
+                    <div class="detail-prop">
+                      <span class="prop-k">OPERATIONAL VENDOR</span>
+                      <span class="prop-v" id="detail-vendor">--</span>
+                    </div>
+                    <div class="detail-prop">
+                      <span class="prop-k">AUTHORIZED PHONE</span>
+                      <span class="prop-v code-font" id="detail-phone">--</span>
+                    </div>
+                    <div class="detail-prop">
+                      <span class="prop-k">CONTACT PERSON</span>
+                      <span class="prop-v" id="detail-contact">--</span>
+                    </div>
+                    <div class="detail-prop">
+                      <span class="prop-k">CUTOFF DEADLINE</span>
+                      <span class="prop-v highlight-deadline" id="detail-deadline">--</span>
+                    </div>
+                    <div class="detail-prop">
+                      <span class="prop-k">REQUIRED ACTION</span>
+                      <span class="prop-v" id="detail-action">--</span>
+                    </div>
+                    <div class="detail-prop">
+                      <span class="prop-k">AUTHORIZATION INFO</span>
+                      <span class="prop-v code-font" id="detail-auth-info">--</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- COLUMN 2: LIVE CALL WORKSPACE -->
+                <div class="col-card col-call">
+                  <div class="col-header">
+                    <div class="header-call-live">
+                      <span class="waveform-anim" id="detail-call-wave">
+                        <span></span><span></span><span></span><span></span>
+                      </span>
+                      <h4>2. LIVE CALL & TRANSCRIPT</h4>
+                    </div>
+                    <span class="live-pill" id="detail-audio-pill">IDLE</span>
+                  </div>
+
+                  <div class="col-body-split">
+                    <!-- Mini Phone Header -->
+                    <div class="call-telemetry-strip">
+                      <div><span class="tel-k">RUN ID:</span> <span class="tel-v code-font" id="detail-run-id">--</span></div>
+                      <div><span class="tel-k">CHANNEL:</span> <span class="tel-v">PSTN</span></div>
+                    </div>
+
+                    <!-- Live Transcript Feed -->
+                    <div class="transcript-feed-enterprise" id="detail-transcript-feed">
+                      <div class="empty-state">No active call session. Trigger recovery to start CALL-E dialer.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- COLUMN 3: RECOVERY VERIFICATION & EVIDENCE -->
+                <div class="col-card col-verification">
+                  <div class="col-header">
+                    <h4>3. EVIDENCE & POLICY VERDICT</h4>
+                    <span class="badge" id="flagship-evidence-badge">Awaiting Data</span>
+                  </div>
+
+                  <div class="col-body">
+                    <div class="evidence-ledger-mini">
+                      <div class="ev-row">
+                        <span class="ev-k">Confirmed Delivery Window:</span>
+                        <span class="ev-v highlight-win" id="ev-window">--</span>
+                      </div>
+                      <div class="ev-row">
+                        <span class="ev-k">Carrier Dispatcher / Agent:</span>
+                        <span class="ev-v" id="ev-dispatcher">--</span>
+                      </div>
+                      <div class="ev-row">
+                        <span class="ev-k">Authorization / Ticket Code:</span>
+                        <span class="ev-v code-font" id="ev-auth">--</span>
+                      </div>
+                    </div>
+
+                    <!-- Policy Box -->
+                    <div class="policy-eval-box" id="policy-eval-box">
+                      <div class="policy-status-row">
+                        <span class="pol-label">POLICY VERDICT:</span>
+                        <span class="pol-verdict" id="detail-policy-status">Pending Call</span>
+                      </div>
+                      <p class="policy-reason-text" id="detail-policy-reason">Awaiting call result</p>
+                    </div>
+
+                    <!-- Verbatim Quotes Block -->
+                    <div class="quotes-card-block">
+                      <div class="quotes-title">Auditable Conversation Quotes:</div>
+                      <div class="quotes-list-box" id="ev-quotes">
+                        <span class="text-muted">Evidence quotes will be extracted live from transcript.</span>
+                      </div>
+                    </div>
+
+                    <!-- Audit Stream for this Incident -->
+                    <div class="incident-audit-block">
+                      <div class="audit-stream-title">Immutable Audit Log</div>
+                      <div class="audit-feed-scroll" id="audit-feed">
+                        <div class="text-muted" style="font-size:0.75rem;padding:0.4rem;">Loading audit trail...</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- SUBVIEW D: CALL OPERATIONS (/calls)            -->
+            <!-- ============================================== -->
+            <div id="subview-calls" class="subview-panel">
+              <div class="panel-inner-header">
+                <div>
+                  <h3 class="inner-title">Call Operations & Telephony Ledger</h3>
+                  <p class="inner-sub">Track real-time and historical PSTN call executions across incidents.</p>
+                </div>
+              </div>
+              <div class="table-card-container">
+                <table class="styled-table">
+                  <thead>
+                    <tr>
+                      <th>INCIDENT ID</th>
+                      <th>CALL-E RUN ID</th>
+                      <th>VENDOR</th>
+                      <th>DESTINATION</th>
+                      <th>TELEPHONY STATUS</th>
+                      <th>ACTION</th>
+                    </tr>
+                  </thead>
+                  <tbody id="calls-table-body">
+                    <tr><td colspan="6" class="empty-state-cell">No telephony calls recorded.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- SUBVIEW E: RECOVERIES (/recoveries)            -->
+            <!-- ============================================== -->
+            <div id="subview-recoveries" class="subview-panel">
+              <div class="panel-inner-header">
+                <div>
+                  <h3 class="inner-title">Operational Recovery Ledger</h3>
+                  <p class="inner-sub">Filter incidents by their verified recovery status.</p>
+                </div>
+                <div class="filter-pills-row">
+                  <button class="filter-pill active" data-filter="ALL">ALL</button>
+                  <button class="filter-pill" data-filter="ACTIVE">ACTIVE</button>
+                  <button class="filter-pill" data-filter="RECOVERED">RECOVERED</button>
+                  <button class="filter-pill" data-filter="UNCONFIRMED">UNCONFIRMED</button>
+                </div>
+              </div>
+              <div class="table-card-container">
+                <table class="styled-table">
+                  <thead>
+                    <tr>
+                      <th>INCIDENT ID</th>
+                      <th>RECOVERY STATE</th>
+                      <th>NEGOTIATED WINDOW</th>
+                      <th>REPRESENTATIVE</th>
+                      <th>POLICY DECISION</th>
+                      <th>ACTION</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recoveries-table-body">
+                    <tr><td colspan="6" class="empty-state-cell">No recovery operations recorded.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- SUBVIEW F: RECOVERY PLANS (/plans)             -->
+            <!-- ============================================== -->
+            <div id="subview-plans" class="subview-panel">
+              <div class="panel-inner-header">
+                <div>
+                  <h3 class="inner-title">Autonomous Recovery Plans</h3>
+                  <p class="inner-sub">Inspect generated recovery constraints and conversational objectives.</p>
+                </div>
+              </div>
+              <div class="plans-grid" id="plans-card-grid">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- SUBVIEW G: EVIDENCE LEDGER (/evidence)         -->
+            <!-- ============================================== -->
+            <div id="subview-evidence" class="subview-panel">
+              <div class="panel-inner-header">
+                <div>
+                  <h3 class="inner-title">Auditable Evidence Ledger</h3>
+                  <p class="inner-sub">Verified commitments extracted exclusively from human operational speech.</p>
+                </div>
+              </div>
+              <div class="table-card-container">
+                <table class="styled-table">
+                  <thead>
+                    <tr>
+                      <th>INCIDENT ID</th>
+                      <th>EVIDENCE FIELD</th>
+                      <th>EXTRACTED VALUE</th>
+                      <th>SOURCE</th>
+                      <th>STATUS</th>
+                    </tr>
+                  </thead>
+                  <tbody id="evidence-table-body">
+                    <tr><td colspan="5" class="empty-state-cell">No evidence captured yet.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- SUBVIEW H: AUDIT TRAIL (/audit)                -->
+            <!-- ============================================== -->
+            <div id="subview-audit" class="subview-panel">
+              <div class="panel-inner-header">
+                <div>
+                  <h3 class="inner-title">Append-Only Operational Audit Trail</h3>
+                  <p class="inner-sub">Full tamper-evident chronology of all system actions, calls, and verdicts.</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="btn-refresh-audit">Refresh Audit</button>
+              </div>
+              <div class="audit-full-feed" id="audit-full-feed">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- SUBVIEW I: SETTINGS / PREFERENCES (/settings)  -->
+            <!-- ============================================== -->
+            <div id="subview-settings" class="subview-panel">
+              <div class="panel-inner-header">
+                <div>
+                  <h3 class="inner-title">Mission Control Preferences</h3>
+                  <p class="inner-sub">Configure display density and notification behavior (Client-side only).</p>
+                </div>
+              </div>
+              <div class="settings-card">
+                <div class="settings-group">
+                  <label class="setting-title" for="pref-theme">Interface Theme</label>
+                  <select id="pref-theme" class="form-select">
+                    <option value="dark">Obsidian Dark (Enterprise Default)</option>
+                    <option value="midnight">Midnight Navy</option>
+                  </select>
+                </div>
+
+                <div class="settings-group">
+                  <label class="setting-title" for="pref-density">Display Density</label>
+                  <select id="pref-density" class="form-select">
+                    <option value="comfortable">Comfortable</option>
+                    <option value="compact">High Density Operational</option>
+                  </select>
+                </div>
+
+                <div class="settings-group">
+                  <label class="setting-title" for="pref-refresh">Auto-Polling Interval</label>
+                  <select id="pref-refresh" class="form-select">
+                    <option value="5000">5 Seconds</option>
+                    <option value="10000">10 Seconds</option>
+                    <option value="30000">30 Seconds</option>
+                  </select>
+                </div>
+
+                <div class="settings-group">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="pref-reduced-motion">
+                    <span>Respect Reduced Motion Animations</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
   </div>
 
-  <!-- Ingestion Modal -->
+  <!-- Ingestion Modal (Preserved & Functional) -->
   <div class="modal-overlay" id="modal-ingest" style="display: none;">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title">Ingest Real Operational Incident</h3>
+        <h3 class="modal-title">Ingest Operational Incident</h3>
         <button class="btn-close" id="btn-close-modal">&times;</button>
       </div>
       <div class="modal-body">
-        <p class="modal-intro">Submit a real operational incident payload below. ResolveCall will dynamically formulate recovery constraints, initiate real CALL-E telephony, and deterministically validate the negotiated resolution.</p>
+        <p class="modal-intro">Submit an operational incident payload below. ResolveCall will formulate recovery constraints, dial the authorized contact via CALL-E, and deterministically validate the negotiated resolution.</p>
 
         <div class="form-group">
           <label for="incident-json-input">Operational Incident JSON Payload:</label>
           <textarea id="incident-json-input" rows="14" class="code-editor" placeholder='{
   "incident_id": "INC-OPS-001",
-  "failure_code": "DELIVERY_BLOCKED",
+  "failure_code": "OPERATIONAL_FAILURE",
   "failure_description": "Driver unable to access dropoff dock",
   "contact_name": "Dispatch",
-  "contact_phone": "+18005550100",
-  "deadline": "14:00",
-  "required_action": "Negotiate access and emergency redelivery today before deadline",
-  "constraints": {
-    "access_pin": "9921"
+  "phone_number": "+18005550100",
+  "recovery_deadline": "19:00",
+  "required_action": "Negotiate emergency redelivery today before deadline",
+  "authorization_info": {
+    "authorization_code": "AUTH-1234"
   }
 }'></textarea>
         </div>
