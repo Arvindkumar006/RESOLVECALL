@@ -192,22 +192,59 @@ export function renderSecurityPage() {
 export function renderLoginPage() {
   return `
     <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1.5rem; background:var(--bg-app);">
-      <div style="width:100%; max-width:400px; background:var(--bg-secondary); border:1px solid var(--border-default); border-radius:var(--radius-xl); padding:2rem; box-shadow:var(--shadow-lg);">
+      <div style="width:100%; max-width:420px; background:var(--bg-secondary); border:1px solid var(--border-default); border-radius:var(--radius-xl); padding:2.25rem 2rem; box-shadow:var(--shadow-lg);">
         <div style="text-align:center; margin-bottom:1.5rem;">
-          <div class="brand-mark" style="margin:0 auto 0.75rem auto;">
+          <a href="/" data-route="/" class="brand-mark" style="margin:0 auto 0.75rem auto; text-decoration:none;">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-          </div>
-          <h2 style="font-size:1.3rem; font-weight:700; color:#fff;">Sign in to Recovery Operations</h2>
-          <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.25rem;">ResolveCall Autonomous Telephony Console</p>
+          </a>
+          <h2 style="font-size:1.35rem; font-weight:800; color:#fff; letter-spacing:-0.01em;">Sign in to Recovery Operations</h2>
+          <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.35rem;">Authenticate to access autonomous telephony console</p>
         </div>
 
-        <form id="form-login" onsubmit="event.preventDefault(); window.location.pathname='/console';">
+        <!-- OAuth Social Sign In Providers -->
+        <div class="oauth-providers-grid">
+          <!-- Google -->
+          <button type="button" class="btn-oauth google" data-oauth="google">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+            </svg>
+            <span>Continue with Google</span>
+          </button>
+
+          <!-- GitHub -->
+          <button type="button" class="btn-oauth github" data-oauth="github">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            <span>Continue with GitHub</span>
+          </button>
+
+          <!-- LinkedIn -->
+          <button type="button" class="btn-oauth linkedin" data-oauth="linkedin">
+            <svg viewBox="0 0 24 24" fill="#0A66C2">
+              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.27a1.62 1.62 0 1 0 0 3.24 1.62 1.62 0 0 0 0-3.24z"/>
+            </svg>
+            <span>Continue with LinkedIn</span>
+          </button>
+        </div>
+
+        <div class="auth-divider">
+          <span>Or continue with work email</span>
+        </div>
+
+        <form id="form-login">
           <div class="form-group" style="margin-bottom:1rem;">
             <label class="form-label" for="login-email">Work Email</label>
             <input class="form-input" type="email" id="login-email" value="operations@enterprise.corp" required />
           </div>
           <div class="form-group" style="margin-bottom:1.25rem;">
-            <label class="form-label" for="login-password">Password</label>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label class="form-label" for="login-password">Password</label>
+              <a href="#" onclick="event.preventDefault(); alert('Password reset link sent to registered enterprise domain.');" style="font-size:0.7rem; color:var(--color-cyan);">Forgot?</a>
+            </div>
             <input class="form-input" type="password" id="login-password" value="••••••••••••" required />
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%; padding:0.65rem;">Sign In</button>
@@ -221,26 +258,94 @@ export function renderLoginPage() {
   `;
 }
 
+export function bindLoginEvents(container, onLoginSuccess) {
+  const form = container.querySelector("#form-login");
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = container.querySelector("#login-email")?.value || "lead@enterprise.corp";
+      if (onLoginSuccess) {
+        onLoginSuccess({
+          name: email.split("@")[0].replace(".", " ").toUpperCase(),
+          email: email,
+          provider: "email",
+          role: "Authorized Telephony Lead"
+        });
+      }
+    });
+  }
+
+  // OAuth buttons
+  container.querySelectorAll("[data-oauth]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const provider = btn.getAttribute("data-oauth");
+      const providerNames = {
+        google: "Google Workspace",
+        github: "GitHub Enterprise",
+        linkedin: "LinkedIn Corporate"
+      };
+      if (onLoginSuccess) {
+        onLoginSuccess({
+          name: "Operations Lead",
+          email: `lead@enterprise-operations.org`,
+          provider: provider,
+          providerName: providerNames[provider] || provider,
+          role: "Authorized Telephony Lead"
+        });
+      }
+    });
+  });
+}
+
 export function renderSignupPage() {
   return `
     <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1.5rem; background:var(--bg-app);">
-      <div style="width:100%; max-width:440px; background:var(--bg-secondary); border:1px solid var(--border-default); border-radius:var(--radius-xl); padding:2rem; box-shadow:var(--shadow-lg);">
+      <div style="width:100%; max-width:440px; background:var(--bg-secondary); border:1px solid var(--border-default); border-radius:var(--radius-xl); padding:2.25rem 2rem; box-shadow:var(--shadow-lg);">
         <div style="text-align:center; margin-bottom:1.5rem;">
-          <div class="brand-mark" style="margin:0 auto 0.75rem auto;">
+          <a href="/" data-route="/" class="brand-mark" style="margin:0 auto 0.75rem auto; text-decoration:none;">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-          </div>
-          <h2 style="font-size:1.3rem; font-weight:700; color:#fff;">Register Recovery Workspace</h2>
-          <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.25rem;">Deploy autonomous incident recovery infrastructure</p>
+          </a>
+          <h2 style="font-size:1.35rem; font-weight:800; color:#fff; letter-spacing:-0.01em;">Register Recovery Workspace</h2>
+          <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:0.35rem;">Deploy autonomous incident recovery infrastructure</p>
         </div>
 
-        <form id="form-signup" onsubmit="event.preventDefault(); window.location.pathname='/onboarding';">
+        <!-- OAuth Providers for Signup -->
+        <div class="oauth-providers-grid">
+          <button type="button" class="btn-oauth google" data-oauth="google">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+            </svg>
+            <span>Sign up with Google</span>
+          </button>
+          <button type="button" class="btn-oauth github" data-oauth="github">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            <span>Sign up with GitHub</span>
+          </button>
+          <button type="button" class="btn-oauth linkedin" data-oauth="linkedin">
+            <svg viewBox="0 0 24 24" fill="#0A66C2">
+              <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.27a1.62 1.62 0 1 0 0 3.24 1.62 1.62 0 0 0 0-3.24z"/>
+            </svg>
+            <span>Sign up with LinkedIn</span>
+          </button>
+        </div>
+
+        <div class="auth-divider">
+          <span>Or register with work email</span>
+        </div>
+
+        <form id="form-signup">
           <div class="form-group" style="margin-bottom:0.85rem;">
             <label class="form-label" for="signup-name">Full Name</label>
-            <input class="form-input" type="text" id="signup-name" placeholder="Operations Lead" required />
+            <input class="form-input" type="text" id="signup-name" placeholder="Alex Morgan" required />
           </div>
           <div class="form-group" style="margin-bottom:0.85rem;">
             <label class="form-label" for="signup-email">Work Email</label>
-            <input class="form-input" type="email" id="signup-email" placeholder="lead@logistics.corp" required />
+            <input class="form-input" type="email" id="signup-email" placeholder="alex@logistics.corp" required />
           </div>
           <div class="form-group" style="margin-bottom:0.85rem;">
             <label class="form-label" for="signup-org">Organization Name</label>
@@ -261,47 +366,129 @@ export function renderSignupPage() {
   `;
 }
 
-export function renderOnboardingPage() {
+export function bindSignupEvents(container, onSignupSuccess) {
+  const form = container.querySelector("#form-signup");
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = container.querySelector("#signup-name")?.value || "Operations Coordinator";
+      const email = container.querySelector("#signup-email")?.value || "lead@enterprise.corp";
+      const org = container.querySelector("#signup-org")?.value || "Enterprise Operations";
+      if (onSignupSuccess) {
+        onSignupSuccess({
+          name: name,
+          email: email,
+          org: org,
+          provider: "email",
+          role: "Authorized Telephony Lead"
+        });
+      }
+    });
+  }
+
+  container.querySelectorAll("[data-oauth]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const provider = btn.getAttribute("data-oauth");
+      const providerNames = {
+        google: "Google Workspace",
+        github: "GitHub Enterprise",
+        linkedin: "LinkedIn Corporate"
+      };
+      if (onSignupSuccess) {
+        onSignupSuccess({
+          name: "Operations Lead",
+          email: `lead@enterprise-operations.org`,
+          org: "Enterprise Global Corp",
+          provider: provider,
+          providerName: providerNames[provider] || provider,
+          role: "Authorized Telephony Lead"
+        });
+      }
+    });
+  });
+}
+
+export function renderOnboardingPage(currentUser) {
+  const user = currentUser || {
+    name: "Operations Lead",
+    email: "lead@enterprisecorp.io",
+    provider: "google"
+  };
+
   return `
-    <div class="public-page" style="max-width:800px;">
+    <div class="public-page" style="max-width:840px;">
       <div style="text-align:center; margin-bottom:1.5rem;">
-        <div class="hero-tag"><span>WORKSPACE INITIALIZATION</span></div>
-        <h1 class="hero-headline" style="font-size:2rem; margin-top:0.5rem;">Welcome to ResolveCall</h1>
-        <p class="hero-subtitle" style="font-size:0.95rem;">Configure your enterprise autonomous telephony policy before triggering recovery calls.</p>
+        <div class="hero-tag"><span class="status-dot"></span><span>STEP 1 OF 2: OPERATIONAL READINESS</span></div>
+        <h1 class="hero-headline" style="font-size:2.2rem; margin-top:0.5rem;">Welcome to ResolveCall</h1>
+        <p class="hero-subtitle" style="font-size:0.95rem;">Review your operator identity and telephony authorization policy before launching Mission Control.</p>
       </div>
 
       <div style="background:var(--bg-secondary); border:1px solid var(--border-default); border-radius:var(--radius-xl); padding:2rem; display:flex; flex-direction:column; gap:1.5rem;">
-        <div class="step-card">
-          <span class="step-card-num">STEP 1</span>
-          <h3 class="step-card-title">Organization Setup</h3>
-          <p class="step-card-desc">Configure workspace domain, notification channels, and coordinator escalation groups.</p>
+        <!-- STEP 1: AUTHENTICATION STATUS -->
+        <div class="step-card" style="border-color:var(--color-emerald-border); background:rgba(16, 185, 129, 0.03);">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="step-card-num" style="color:var(--color-emerald);">AUTHENTICATION (VERIFIED)</span>
+            <span class="badge badge-recovered">Authenticated</span>
+          </div>
+          <h3 class="step-card-title" style="color:#fff; margin-top:0.25rem;">"Who are you?"</h3>
+          <p class="step-card-desc">Your operational coordinator identity is securely confirmed via enterprise SSO.</p>
+          <div style="background:var(--bg-panel); padding:0.75rem 1rem; border-radius:var(--radius-md); border:1px solid var(--border-subtle); display:flex; align-items:center; justify-content:space-between; margin-top:0.5rem;">
+            <div>
+              <strong style="color:#fff; font-size:0.9rem;">${escapeHtml(user.name || "Operations Lead")}</strong>
+              <div class="cell-mono text-muted" style="font-size:0.75rem;">${escapeHtml(user.email || "lead@enterprise.corp")}</div>
+            </div>
+            <span class="badge" style="background:rgba(6, 182, 212, 0.15); color:var(--color-cyan); text-transform:uppercase;">
+              ${user.provider ? `${user.provider} SSO` : 'SSO Verified'}
+            </span>
+          </div>
         </div>
 
-        <div class="step-card" style="border-color:var(--color-cyan-border);">
-          <span class="step-card-num">STEP 2 & 3: CRITICAL DISTINCTION</span>
-          <h3 class="step-card-title" style="color:var(--color-cyan);">Authentication vs. Authorization</h3>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:0.5rem;">
-            <div style="background:var(--bg-panel); padding:0.75rem; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
-              <strong style="color:#fff; font-size:0.8rem;">Authentication:</strong>
-              <p style="color:var(--text-secondary); font-size:0.75rem; margin-top:0.2rem;">"Who are you?" Identifies the human supervisor signing into the console.</p>
+        <!-- STEP 2: TELEPHONY AUTHORIZATION POLICY -->
+        <div class="step-card" style="border-color:var(--color-cyan-border); background:rgba(6, 182, 212, 0.03);">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="step-card-num">AUTHORIZATION POLICY (ENFORCED)</span>
+            <span class="badge badge-calling">Backend Enforced</span>
+          </div>
+          <h3 class="step-card-title" style="color:var(--color-cyan); margin-top:0.25rem;">"Which phone numbers can ResolveCall dial?"</h3>
+          <p class="step-card-desc">
+            ResolveCall will <strong>never freely dial arbitrary numbers</strong>. All outbound PSTN recovery calls are filtered against the authorized E.164 phone whitelist policy (<code class="mono">AUTHORIZED_PHONE_WHITELIST</code>).
+          </p>
+          <div style="background:var(--bg-panel); padding:0.75rem 1rem; border-radius:var(--radius-md); border:1px solid var(--border-subtle); margin-top:0.5rem; font-size:0.8rem;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+              <span class="text-muted">Policy Engine:</span>
+              <span class="cell-mono text-cyan">E.164 Strict Regex & Whitelist Match</span>
             </div>
-            <div style="background:var(--bg-panel); padding:0.75rem; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
-              <strong style="color:var(--color-cyan); font-size:0.8rem;">Authorization Policy:</strong>
-              <p style="color:var(--text-secondary); font-size:0.75rem; margin-top:0.2rem;">"Which phone numbers can ResolveCall dial?" Enforces E.164 whitelists so agents cannot call arbitrary destinations.</p>
+            <div style="display:flex; justify-content:space-between;">
+              <span class="text-muted">PSTN Gateway:</span>
+              <span class="cell-mono" style="color:var(--color-emerald);">CALL-E Production MCP Dual-Phase</span>
             </div>
           </div>
         </div>
 
-        <div class="step-card">
-          <span class="step-card-num">STEP 4</span>
-          <h3 class="step-card-title">Operational Ingestion Integration</h3>
-          <p class="step-card-desc">Connect webhooks or use REST API (POST /api/incidents/ingest) to pipe real-world incidents.</p>
-        </div>
-
-        <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1rem;">
-          <a href="/console" data-route="/console" class="btn btn-primary" style="padding:0.65rem 1.5rem;">Enter Mission Control</a>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:0.5rem;">
+          <a href="/security" data-route="/security" style="font-size:0.8rem; color:var(--text-muted); text-decoration:underline;">Inspect Security Policy</a>
+          <button class="btn btn-primary" id="btn-complete-onboarding" style="padding:0.7rem 1.75rem; font-size:0.9rem;">
+            Authorize & Launch Mission Control ➔
+          </button>
         </div>
       </div>
     </div>
   `;
+}
+
+export function bindOnboardingEvents(container, onComplete) {
+  const btn = container.querySelector("#btn-complete-onboarding");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      if (onComplete) onComplete();
+    });
+  }
+}
+
+function escapeHtml(str) {
+  return (str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }

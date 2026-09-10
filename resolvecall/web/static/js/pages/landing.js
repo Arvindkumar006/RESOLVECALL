@@ -25,7 +25,7 @@ export function renderLandingPage() {
           <a href="/how-it-works" data-route="/how-it-works" class="public-nav-link">How It Works</a>
           <a href="/architecture" data-route="/architecture" class="public-nav-link">Architecture</a>
           <a href="/security" data-route="/security" class="public-nav-link">Security & Whitelist</a>
-          <a href="/console" data-route="/console" class="btn btn-secondary btn-sm">Mission Control</a>
+          <a href="/login" data-route="/login" class="btn btn-secondary btn-sm">Sign In</a>
           <a href="/signup" data-route="/signup" class="btn btn-primary btn-sm">Get Started</a>
         </nav>
       </header>
@@ -47,9 +47,9 @@ export function renderLandingPage() {
         </p>
 
         <div class="hero-cta-group">
-          <a href="/console" data-route="/console" class="btn btn-primary" style="padding:0.75rem 1.5rem; font-size:0.95rem;">
-            Launch Console
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <a href="/signup" data-route="/signup" class="btn btn-primary" style="padding:0.75rem 1.5rem; font-size:0.95rem;">
+            Get Started
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </a>
           <a href="/how-it-works" data-route="/how-it-works" class="btn btn-secondary" style="padding:0.75rem 1.5rem; font-size:0.95rem;">
             See How It Works

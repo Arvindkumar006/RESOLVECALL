@@ -11,6 +11,35 @@ class Store {
     this.listeners = new Set();
     this.callTimerInterval = null;
     this.callElapsedSeconds = 0;
+    
+    // Authentication State
+    this.isAuthenticated = sessionStorage.getItem("resolvecall_auth") === "true";
+    try {
+      this.currentUser = JSON.parse(sessionStorage.getItem("resolvecall_user")) || null;
+    } catch (e) {
+      this.currentUser = null;
+    }
+  }
+
+  loginUser(userData) {
+    this.isAuthenticated = true;
+    this.currentUser = userData || {
+      name: "Operations Coordinator",
+      email: "ops@enterprisecorp.io",
+      provider: "google",
+      role: "Authorized Telephony Lead"
+    };
+    sessionStorage.setItem("resolvecall_auth", "true");
+    sessionStorage.setItem("resolvecall_user", JSON.stringify(this.currentUser));
+    this.notify("auth", { isAuthenticated: true, user: this.currentUser });
+  }
+
+  logoutUser() {
+    this.isAuthenticated = false;
+    this.currentUser = null;
+    sessionStorage.removeItem("resolvecall_auth");
+    sessionStorage.removeItem("resolvecall_user");
+    this.notify("auth", { isAuthenticated: false, user: null });
   }
 
   subscribe(listener) {

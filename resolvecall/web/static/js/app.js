@@ -16,7 +16,10 @@ import {
   renderSecurityPage,
   renderLoginPage,
   renderSignupPage,
-  renderOnboardingPage
+  renderOnboardingPage,
+  bindLoginEvents,
+  bindSignupEvents,
+  bindOnboardingEvents
 } from "./pages/publicPages.js";
 import { renderConsolePage, bindConsoleEvents } from "./pages/console.js";
 import { renderIncidentsPage } from "./pages/incidents.js";
@@ -157,6 +160,32 @@ class Application {
     }
   }
 
+  updateUserProfileInSidebar() {
+    const profileContainer = document.querySelector(".sidebar-footer .org-profile");
+    if (profileContainer && store.currentUser) {
+      const initials = (store.currentUser.name || "RC").slice(0, 2).toUpperCase();
+      const providerLabel = store.currentUser.provider ? `${store.currentUser.provider.toUpperCase()}` : "SSO";
+      profileContainer.innerHTML = `
+        <div class="org-avatar" title="${store.currentUser.name}">${initials}</div>
+        <div class="org-info" style="flex:1; overflow:hidden;">
+          <span class="org-name" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${store.currentUser.name}</span>
+          <span class="org-env" style="font-size:0.65rem; color:var(--color-cyan);">${providerLabel} Verified</span>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="btn-sign-out" title="Sign Out" style="padding:0.25rem 0.4rem; color:var(--text-muted); margin-left:auto;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        </button>
+      `;
+      const signoutBtn = profileContainer.querySelector("#btn-sign-out");
+      if (signoutBtn) {
+        signoutBtn.addEventListener("click", () => {
+          store.logoutUser();
+          this.showToast("Signed out of recovery console", "info");
+          this.router.navigate("/login");
+        });
+      }
+    }
+  }
+
   setupRouter() {
     const routes = [
       { pattern: "/", name: "landing", isPublic: true },
@@ -202,19 +231,50 @@ class Application {
       }
     });
 
+    // Route Authentication Guard: Protected routes require authentication
+    if (!route.isPublic && !store.isAuthenticated) {
+      this.showToast("Authentication required. Please sign in to access Recovery Operations.", "info");
+      this.router.navigate("/login");
+      return;
+    }
+
     if (route.isPublic) {
       sidebar.style.display = "none";
       topbar.style.display = "none";
       viewport.style.padding = "0";
       viewport.style.maxWidth = "100%";
 
-      if (route.name === "landing") viewport.innerHTML = renderLandingPage();
-      else if (route.name === "how-it-works") viewport.innerHTML = renderHowItWorksPage();
-      else if (route.name === "architecture") viewport.innerHTML = renderArchitecturePage();
-      else if (route.name === "security") viewport.innerHTML = renderSecurityPage();
-      else if (route.name === "login") viewport.innerHTML = renderLoginPage();
-      else if (route.name === "signup") viewport.innerHTML = renderSignupPage();
-      else if (route.name === "onboarding") viewport.innerHTML = renderOnboardingPage();
+      if (route.name === "landing") {
+        viewport.innerHTML = renderLandingPage();
+      } else if (route.name === "how-it-works") {
+        viewport.innerHTML = renderHowItWorksPage();
+      } else if (route.name === "architecture") {
+        viewport.innerHTML = renderArchitecturePage();
+      } else if (route.name === "security") {
+        viewport.innerHTML = renderSecurityPage();
+      } else if (route.name === "login") {
+        viewport.innerHTML = renderLoginPage();
+        bindLoginEvents(viewport, (user) => {
+          store.loginUser(user);
+          this.showToast(`Signed in as ${user.name} (${user.providerName || user.provider})`, "success");
+          this.updateUserProfileInSidebar();
+          this.router.navigate("/console");
+        });
+      } else if (route.name === "signup") {
+        viewport.innerHTML = renderSignupPage();
+        bindSignupEvents(viewport, (user) => {
+          store.loginUser(user);
+          this.showToast(`Workspace created for ${user.name}`, "success");
+          this.updateUserProfileInSidebar();
+          this.router.navigate("/onboarding");
+        });
+      } else if (route.name === "onboarding") {
+        viewport.innerHTML = renderOnboardingPage(store.currentUser);
+        bindOnboardingEvents(viewport, () => {
+          this.showToast("Telephony authorization confirmed. Launching Mission Control.", "success");
+          this.router.navigate("/console");
+        });
+      }
       
       this.stream.disconnect();
       return;
@@ -225,6 +285,7 @@ class Application {
     topbar.style.display = "flex";
     viewport.style.padding = "1.75rem";
     viewport.style.maxWidth = "1600px";
+    this.updateUserProfileInSidebar();
 
     if (breadcrumb) {
       const titles = {
