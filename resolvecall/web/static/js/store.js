@@ -12,57 +12,14 @@ class Store {
     this.callTimerInterval = null;
     this.callElapsedSeconds = 0;
     
-    // Autonomous Operations Profile for Direct Console Access (Hackathon Submission)
-    this.isAuthenticated = true;
+    // Active Operations Profile (Console Operator)
     this.currentUser = {
       name: "Operations Lead",
       email: "lead@resolvecall.io",
-      role: "Autonomous Telephony Lead",
-      provider: "Console"
+      role: "Autonomous Telephony Lead"
     };
-    this.authInitialized = true;
   }
 
-  async initAuth(api) {
-    try {
-      const data = await api.auth.getMe();
-      if (data && data.user) {
-        this.isAuthenticated = true;
-        this.currentUser = data.user;
-      } else {
-        this.isAuthenticated = false;
-        this.currentUser = null;
-      }
-    } catch (err) {
-      this.isAuthenticated = false;
-      this.currentUser = null;
-    } finally {
-      this.authInitialized = true;
-      this.notify("auth", { isAuthenticated: this.isAuthenticated, user: this.currentUser });
-    }
-    return this.isAuthenticated;
-  }
-
-  setAuthenticatedUser(user) {
-    this.isAuthenticated = true;
-    this.currentUser = user;
-    this.authInitialized = true;
-    this.notify("auth", { isAuthenticated: true, user: this.currentUser });
-  }
-
-  async logoutUser(api) {
-    try {
-      if (api && api.auth) {
-        await api.auth.logout();
-      }
-    } catch (e) {
-      console.warn("Logout request failed:", e);
-    } finally {
-      this.isAuthenticated = false;
-      this.currentUser = null;
-      this.notify("auth", { isAuthenticated: false, user: null });
-    }
-  }
 
   subscribe(listener) {
     this.listeners.add(listener);

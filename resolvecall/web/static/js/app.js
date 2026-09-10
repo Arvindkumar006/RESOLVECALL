@@ -13,13 +13,7 @@ import { renderLandingPage } from "./pages/landing.js";
 import {
   renderHowItWorksPage,
   renderArchitecturePage,
-  renderSecurityPage,
-  renderLoginPage,
-  renderSignupPage,
-  renderOnboardingPage,
-  bindLoginEvents,
-  bindSignupEvents,
-  bindOnboardingEvents
+  renderSecurityPage
 } from "./pages/publicPages.js";
 import { renderConsolePage, bindConsoleEvents } from "./pages/console.js";
 import { renderIncidentsPage } from "./pages/incidents.js";
@@ -178,9 +172,8 @@ class Application {
       const signoutBtn = profileContainer.querySelector("#btn-sign-out");
       if (signoutBtn) {
         signoutBtn.addEventListener("click", () => {
-          store.logoutUser();
-          this.showToast("Signed out of recovery console", "info");
-          this.router.navigate("/login");
+          this.showToast("Returning to Overview", "info");
+          this.router.navigate("/");
         });
       }
     }
@@ -192,9 +185,6 @@ class Application {
       { pattern: "/how-it-works", name: "how-it-works", isPublic: true },
       { pattern: "/architecture", name: "architecture", isPublic: true },
       { pattern: "/security", name: "security", isPublic: true },
-      { pattern: "/login", name: "login", isPublic: true },
-      { pattern: "/signup", name: "signup", isPublic: true },
-      { pattern: "/onboarding", name: "onboarding", isPublic: true },
       { pattern: "/console", name: "console", isPublic: false },
       { pattern: "/incidents", name: "incidents", isPublic: false },
       { pattern: "/incidents/:id", name: "incident-detail", isPublic: false },
@@ -230,13 +220,6 @@ class Application {
         item.classList.add("active");
       }
     });
-
-    // Hackathon submission mode: Order is directly Landing Page -> Console
-    // No login/signup barrier for hackathon judges/evaluators
-    if (route.name === "login" || route.name === "signup" || route.name === "onboarding") {
-      this.router.navigate("/console");
-      return;
-    }
 
     if (route.isPublic) {
       sidebar.style.display = "none";
