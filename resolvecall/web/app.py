@@ -142,3 +142,16 @@ async def health_check():
         "env": settings.APP_ENV,
         "active_incidents": len(orchestrator.incidents),
     }
+
+
+@app.get("/{full_path:path}", response_class=HTMLResponse)
+async def serve_spa(full_path: str):
+    """Fallback handler to serve the Single Page Application for frontend client-side routes."""
+    if full_path.startswith("api") or full_path.startswith("static"):
+        raise HTTPException(status_code=404, detail="Not found")
+    index_path = os.path.join(static_dir, "index.html")
+    if os.path.exists(index_path):
+        with open(index_path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse(content="<h1>ResolveCall Dashboard Loading...</h1>")
+

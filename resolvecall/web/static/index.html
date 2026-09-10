@@ -3,239 +3,190 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ResolveCall — Autonomous Operational Incident Recovery Agent</title>
-  <meta name="description" content="Production-grade real-time autonomous operational incident recovery agent powered by CALL-E telephony.">
+  <title>ResolveCall — Autonomous Operational Incident Recovery Telephony Agent</title>
+  <meta name="description" content="Enterprise-grade autonomous operational incident recovery agent powered by real CALL-E PSTN telephony, dynamic negotiation, and deterministic policy verification.">
+  
+  <!-- Modern Typography Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Design System Stylesheet -->
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <!-- Ambient background glow -->
-  <div class="glow-sphere glow-1"></div>
-  <div class="glow-sphere glow-2"></div>
+  <!-- Ambient Atmospheric Lighting -->
+  <div class="bg-ambient-glow glow-primary"></div>
+  <div class="bg-ambient-glow glow-secondary"></div>
 
-  <div class="app-layout">
-    <!-- Top Bar -->
-    <header class="top-nav">
-      <div class="nav-brand">
-        <div class="logo-mark">
-          <div class="pulse-ring"></div>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-          </svg>
+  <!-- Application Shell Framework -->
+  <div class="app-container" id="app-root">
+    <!-- Enterprise Sidebar Navigation -->
+    <aside class="sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <a href="/" data-route="/" class="brand-link">
+          <div class="brand-mark">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+          </div>
+          <div class="brand-titles">
+            <span class="brand-name">RESOLVECALL</span>
+            <span class="brand-tag">Autonomous Recovery</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="sidebar-nav">
+        <!-- OVERVIEW -->
+        <div class="nav-section">
+          <span class="nav-section-title">Overview</span>
+          <a href="/console" data-route="/console" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+            <span>Console</span>
+          </a>
         </div>
-        <div>
-          <h1 class="brand-title">RESOLVECALL</h1>
-          <p class="brand-subtitle">CALL-E Autonomous Incident Recovery Telephony</p>
+
+        <!-- OPERATIONS -->
+        <div class="nav-section">
+          <span class="nav-section-title">Operations</span>
+          <a href="/incidents" data-route="/incidents" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+            <span>Incidents</span>
+            <span class="nav-badge" id="sidebar-inc-badge">0</span>
+          </a>
+          <a href="/calls" data-route="/calls" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <span>Calls</span>
+            <span class="nav-badge" id="sidebar-calls-badge">0</span>
+          </a>
+          <a href="/recoveries" data-route="/recoveries" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span>Recoveries</span>
+          </a>
+        </div>
+
+        <!-- INTELLIGENCE -->
+        <div class="nav-section">
+          <span class="nav-section-title">Intelligence</span>
+          <a href="/plans" data-route="/plans" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <span>Recovery Plans</span>
+          </a>
+          <a href="/evidence" data-route="/evidence" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            <span>Evidence</span>
+          </a>
+        </div>
+
+        <!-- GOVERNANCE -->
+        <div class="nav-section">
+          <span class="nav-section-title">Governance</span>
+          <a href="/audit" data-route="/audit" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Audit Trail</span>
+          </a>
+        </div>
+
+        <!-- SECURITY & SYSTEM -->
+        <div class="nav-section">
+          <span class="nav-section-title">Security & System</span>
+          <a href="/security-settings" data-route="/security-settings" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Authorization</span>
+          </a>
+          <a href="/settings" data-route="/settings" class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Settings</span>
+          </a>
         </div>
       </div>
 
-      <div class="nav-actions">
-        <div class="status-chip" id="connection-status">
-          <span class="status-dot"></span>
-          <span class="status-text">CALL-E Connected</span>
+      <div class="sidebar-footer">
+        <div class="sys-health-pill">
+          <div class="sys-health-status">
+            <span class="status-dot"></span>
+            <span>Gateway Online</span>
+          </div>
+          <span class="cell-mono text-cyan" style="font-size:0.7rem;">CALL-E</span>
         </div>
-        <button class="btn btn-secondary" id="btn-open-ingest">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-          Ingest Real Incident
-        </button>
+
+        <div class="org-profile">
+          <div class="org-avatar">RC</div>
+          <div class="org-info">
+            <span class="org-name">Global Ops</span>
+            <span class="org-env">Production Enforced</span>
+          </div>
+        </div>
       </div>
-    </header>
+    </aside>
 
-    <!-- Main Grid -->
-    <main class="dashboard-grid">
-      <!-- Left Column: Active Incidents & Ingestion -->
-      <section class="panel panel-incidents">
-        <div class="panel-header">
-          <div>
-            <h2 class="panel-title">Operational Incidents</h2>
-            <p class="panel-desc">Select an incident to monitor or trigger recovery</p>
-          </div>
-          <span class="badge" id="incident-count-badge">0 Active</span>
-        </div>
-
-        <div class="incident-list" id="incident-list">
-          <!-- Injected dynamically -->
-        </div>
-      </section>
-
-      <!-- Center & Right: Mission Control Monitor -->
-      <section class="panel panel-monitor">
-        <!-- Incident Status Banner -->
-        <div class="mission-header" id="active-incident-banner">
-          <div class="mission-title-group">
-            <div class="mission-tags">
-              <span class="incident-badge-status" id="active-status-badge">SELECT INCIDENT</span>
-              <span class="incident-id-tag" id="active-id-tag">--</span>
-              <span class="shipment-id-tag" id="active-shipment-tag">--</span>
-            </div>
-            <h2 class="mission-title" id="active-failure-title">No Incident Loaded</h2>
-            <p class="mission-cargo" id="active-cargo-desc">Upload or select an incident from the left queue.</p>
-          </div>
-
-          <div class="mission-controls">
-            <button class="btn btn-primary btn-call-trigger" id="btn-trigger-recovery" disabled>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-              <span>Trigger CALL-E Recovery</span>
-            </button>
+    <!-- Main Workspace Viewport -->
+    <div class="main-wrapper">
+      <!-- Enterprise Top Navigation Bar -->
+      <header class="topbar" id="app-topbar">
+        <div class="topbar-left">
+          <button class="btn-mobile-menu" id="btn-mobile-menu" aria-label="Toggle navigation menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
+          </button>
+          
+          <div class="topbar-breadcrumb">
+            <span>ResolveCall</span>
+            <span class="cell-mono">/</span>
+            <span class="active-page" id="topbar-page-breadcrumb">Operations Console</span>
           </div>
         </div>
 
-        <!-- Lifecycle Stage Progression -->
-        <div class="stage-stepper">
-          <div class="step-node" data-stage="OPEN">
-            <div class="step-circle">1</div>
-            <div class="step-label">Open</div>
+        <div class="topbar-right">
+          <div class="telephony-live-chip" id="nav-sse-status">
+            <span class="status-dot"></span>
+            <span>PSTN Gateway Ready</span>
           </div>
-          <div class="step-line"></div>
-          <div class="step-node" data-stage="PLANNING">
-            <div class="step-circle">2</div>
-            <div class="step-label">Planning</div>
-          </div>
-          <div class="step-line"></div>
-          <div class="step-node" data-stage="CALLING">
-            <div class="step-circle">3</div>
-            <div class="step-label">Calling</div>
-          </div>
-          <div class="step-line"></div>
-          <div class="step-node" data-stage="NEGOTIATING">
-            <div class="step-circle">4</div>
-            <div class="step-label">Negotiating</div>
-          </div>
-          <div class="step-line"></div>
-          <div class="step-node" data-stage="VALIDATING">
-            <div class="step-circle">5</div>
-            <div class="step-label">Validating</div>
-          </div>
-          <div class="step-line"></div>
-          <div class="step-node" data-stage="RECOVERED">
-            <div class="step-circle">6</div>
-            <div class="step-label">Outcome</div>
-          </div>
+
+          <button class="btn btn-primary btn-sm" id="btn-nav-ingest">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+            + Ingest Incident
+          </button>
         </div>
+      </header>
 
-        <!-- Operational Metrics Row -->
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-label">Operational Vendor</div>
-            <div class="metric-val" id="metric-vendor">--</div>
-            <div class="metric-sub" id="metric-phone">--</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Recovery Deadline</div>
-            <div class="metric-val accent-deadline" id="metric-deadline">--</div>
-            <div class="metric-sub">Strict cutoff limit</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">CALL-E Plan / Run ID</div>
-            <div class="metric-val code-font" id="metric-call-id">--</div>
-            <div class="metric-sub" id="metric-call-sub">PSTN Telephony Active</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Policy Validation</div>
-            <div class="metric-val" id="metric-policy-status">--</div>
-            <div class="metric-sub" id="metric-policy-reason">Deterministic check</div>
-          </div>
-        </div>
-
-        <!-- Two Split Columns: Live Conversation Transcript & Extracted Verification Proof -->
-        <div class="monitor-split">
-          <!-- Live Transcript Pane -->
-          <div class="sub-panel transcript-panel">
-            <div class="sub-panel-header">
-              <div class="title-with-wave">
-                <span class="waveform-anim" id="call-wave-indicator">
-                  <span></span><span></span><span></span><span></span>
-                </span>
-                <h3 class="sub-title">Real-Time Call Transcript</h3>
-              </div>
-              <span class="live-pill" id="live-audio-pill">IDLE</span>
-            </div>
-            <div class="transcript-feed" id="transcript-feed">
-              <div class="empty-state">No active call session. Trigger recovery to start CALL-E dialer.</div>
-            </div>
-          </div>
-
-          <!-- Structured Evidence & Policy Pane -->
-          <div class="sub-panel evidence-panel">
-            <div class="sub-panel-header">
-              <h3 class="sub-title">Verified Recovery Evidence</h3>
-              <span class="badge" id="evidence-badge">Awaiting Data</span>
-            </div>
-
-            <div class="evidence-content" id="evidence-container">
-              <div class="evidence-item">
-                <span class="ev-label">Confirmed Delivery Window:</span>
-                <span class="ev-value highlight-win" id="ev-window">--</span>
-              </div>
-              <div class="evidence-item">
-                <span class="ev-label">Carrier Dispatcher / Agent:</span>
-                <span class="ev-value" id="ev-dispatcher">--</span>
-              </div>
-              <div class="evidence-item">
-                <span class="ev-label">Authorization / Ticket Code:</span>
-                <span class="ev-value code-font" id="ev-auth">--</span>
-              </div>
-              <div class="evidence-item">
-                <span class="ev-label">Recovery Action Summary:</span>
-                <span class="ev-value" id="ev-summary">--</span>
-              </div>
-
-              <div class="quotes-block">
-                <div class="quotes-header">Auditable Conversation Quotes:</div>
-                <div class="quotes-list" id="ev-quotes">
-                  <span class="text-muted">Evidence quotes will be extracted live from transcript.</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Audit Trail Stream -->
-            <div class="audit-stream-block">
-              <h4 class="audit-stream-title">Immutable Real-Time Audit Log</h4>
-              <div class="audit-feed" id="audit-feed">
-                <!-- Injected live -->
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
+      <!-- Active Page Mount Point -->
+      <main class="content-viewport" id="app-viewport">
+        <!-- Dynamically rendered by router -->
+      </main>
+    </div>
   </div>
 
-  <!-- Ingestion Modal -->
-  <div class="modal-overlay" id="modal-ingest" style="display: none;">
-    <div class="modal-dialog">
+  <!-- Ingestion Modal Dialog -->
+  <div class="modal-backdrop" id="modal-ingest" style="display:none;">
+    <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">Ingest Real Operational Incident</h3>
-        <button class="btn-close" id="btn-close-modal">&times;</button>
+        <h2 class="modal-title">Ingest Real Operational Incident</h2>
+        <button class="btn btn-ghost btn-sm modal-close" id="btn-modal-close" aria-label="Close modal">&times;</button>
       </div>
+
       <div class="modal-body">
-        <p class="modal-intro">Submit a real operational incident payload below. ResolveCall will dynamically formulate recovery constraints, initiate real CALL-E telephony, and deterministically validate the negotiated resolution.</p>
+        <p style="font-size:0.825rem; color:var(--text-secondary); line-height:1.5;">
+          Submit any valid operational incident JSON payload. ResolveCall will dynamically formulate recovery constraints, dial the authorized contact via CALL-E over PSTN carrier lines, and deterministically validate the negotiated resolution.
+        </p>
 
         <div class="form-group">
-          <label for="incident-json-input">Operational Incident JSON Payload:</label>
-          <textarea id="incident-json-input" rows="14" class="code-editor" placeholder='{
-  "incident_id": "INC-OPS-001",
-  "failure_code": "DELIVERY_BLOCKED",
-  "failure_description": "Driver unable to access dropoff dock",
-  "contact_name": "Dispatch",
-  "contact_phone": "+18005550199",
-  "deadline": "14:00",
-  "required_action": "Negotiate access and emergency redelivery today before deadline",
-  "constraints": {
-    "access_pin": "9921"
-  }
-}'></textarea>
+          <label class="form-label" for="input-incident-json">Operational Incident JSON Payload:</label>
+          <textarea id="input-incident-json" rows="12" class="form-textarea code-editor" spellcheck="false"></textarea>
         </div>
       </div>
+
       <div class="modal-footer">
-        <button class="btn btn-secondary" id="btn-cancel-modal">Cancel</button>
-        <button class="btn btn-primary" id="btn-submit-incident">Ingest & Register Incident</button>
+        <button class="btn btn-secondary" id="btn-modal-cancel">Cancel</button>
+        <button class="btn btn-primary" id="btn-modal-submit">Ingest & Register Incident</button>
       </div>
     </div>
   </div>
 
-  <script src="/static/app.js"></script>
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Application Entry Script -->
+  <script type="module" src="/static/js/app.js"></script>
 </body>
 </html>
