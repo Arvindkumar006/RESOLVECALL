@@ -34,7 +34,7 @@ class CalleClient:
     ) -> Dict[str, Any]:
         """Plans a phone call with CALL-E. Returns plan_id, confirm_token, and structured planning output."""
         if not settings.is_phone_authorized(to_phone):
-            raise CalleError(f"Destination phone {to_phone} is not authorized by security whitelist policy.")
+            raise CalleError(f"Destination phone {mask_phone(to_phone)} is not authorized by security whitelist policy.")
 
         cmd = [
             self.cli_path,
@@ -51,7 +51,7 @@ class CalleClient:
         if region:
             cmd.extend(["--region", region])
 
-        logger.info(f"Executing CALL-E plan: {goal[:60]}... to {to_phone}")
+        logger.info(f"Executing CALL-E plan: {goal[:60]}... to {mask_phone(to_phone)}")
         try:
             res = subprocess.run(
                 cmd,
@@ -109,7 +109,7 @@ class CalleClient:
             confirm_token,
             "--json",
         ]
-        logger.info(f"Executing CALL-E run for plan {plan_id}")
+        logger.info(f"Executing CALL-E run for plan {plan_id[:4]}...")
         try:
             res = subprocess.run(
                 cmd,

@@ -8,7 +8,7 @@
   "recovery_deadline": "16:00",
   "required_action": "Provide delivery clearance reference to dispatch and confirm redelivery before 16:00 cutoff today.",
   "authorization_info": {
-    "clearance_reference": "REF-9821",
-    "facility_access_code": "5501"
+    "clearance_reference": "REF-XXXX",
+    "facility_access_code": "XXXX"
   }
 }

@@ -15,6 +15,7 @@ from resolvecall.core.models import (
     PolicyEvaluationResult,
     StructuredEvidence,
 )
+from resolvecall.core.utils import mask_phone
 from resolvecall.engine.planner import RecoveryPlanner
 from resolvecall.engine.policy_engine import PolicyEngine
 from resolvecall.extraction.extractor import TranscriptExtractor
@@ -80,7 +81,7 @@ class RecoveryOrchestrator:
             data={
                 "vendor": incident.vendor,
                 "deadline": incident.recovery_deadline,
-                "phone": incident.phone_number,
+                "phone": mask_phone(incident.phone_number),
                 "failure_code": incident.failure_code,
             },
         )
@@ -129,7 +130,7 @@ class RecoveryOrchestrator:
             await self._emit_event(
                 incident_id,
                 "SECURITY_REJECTED",
-                f"Telephony destination {incident.phone_number} is not in the authorized whitelist.",
+                f"Telephony destination {mask_phone(incident.phone_number)} is not in the authorized whitelist.",
             )
             return incident
 
@@ -159,9 +160,9 @@ class RecoveryOrchestrator:
             incident.status = IncidentStatus.FAILED
             await self._emit_event(
                 incident_id,
-                "PLAN_BLOCKED",
-                f"CALL-E call planning blocked: {blocker}",
-                {"plan_res": plan_res},
+                "CALL_PLAN_AMBIGUOUS",
+                f"CALL-E call plan is ambiguous and cannot proceed without operator input: {blocker}",
+                {"blocker": blocker, "plan_res_keys": list(plan_res.keys())},
             )
             return incident
 
@@ -177,8 +178,8 @@ class RecoveryOrchestrator:
         await self._emit_event(
             incident_id,
             "CALL_INITIATED",
-            f"Initiating real-time PSTN phone call to {incident.phone_number} via CALL-E.",
-            {"to_phone": incident.phone_number},
+            f"Initiating real-time PSTN phone call to {mask_phone(incident.phone_number)} via CALL-E.",
+            {"to_phone": mask_phone(incident.phone_number)},
         )
 
         try:

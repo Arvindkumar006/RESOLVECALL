@@ -6,7 +6,7 @@
 
 
 [![Telephony Gateway](https://img.shields.io/badge/Telephony-CALL--E%20PSTN%20Gateway-06b6d4?style=for-the-badge&logo=twilio&logoColor=white)](https://github.com/CALLE-AI/call-e-integrations)
-[![Runtime Mode](https://img.shields.io/badge/Runtime-100%25%20Real--Time%20Production-10b981?style=for-the-badge&logo=checkmarx&logoColor=white)](#-the-real-time-production-mandate)
+[![Runtime Mode](https://img.shields.io/badge/Runtime-Real--Time%20PSTN%20Telephony-10b981?style=for-the-badge&logo=checkmarx&logoColor=white)](#-the-real-time-production-mandate)
 [![Test Suite](https://img.shields.io/badge/Test%20Suite-8%2F8%20Passing%20(100%25)-3b82f6?style=for-the-badge&logo=pytest&logoColor=white)](tests/)
 [![Architecture](https://img.shields.io/badge/Backend-FastAPI%20+%20SSE-6366f1?style=for-the-badge&logo=fastapi&logoColor=white)](#-tech-stack)
 [![License](https://img.shields.io/badge/License-MIT-a855f7?style=for-the-badge)](LICENSE)
@@ -137,10 +137,10 @@ $$\Delta_{\text{minutes}} = \text{Epoch}(T_{\text{deadline}}) - \text{Epoch}(T_{
 * **`REFUSED / UNANSWERED`**: If the phone rings without answer or dispatch refuses redelivery, the incident is flagged for **`ESCALATED`** human intervention.
 
 ### 3. Dual-Phase Telephony Security & Whitelisting
-Because the agent initiates outbound telephone calls on real telecom carriers, security is paramount:
-* **E.164 Whitelist Enforcement**: Telephony actions are restricted by `AUTHORIZED_PHONE_WHITELIST` to prevent unauthorized outbound dialing.
-* **Dual-Phase Commitment**: CALL-E produces a cryptographic confirmation token during call planning that must be validated before execution begins.
-* **Full Eavesdrop-Proof Auditability**: Every turn, transcript segment, and policy check is written to an immutable append-only audit trail.
+Because the agent initiates outbound telephone calls on real telecom carriers, security is important:
+* **E.164 Explicit Allowlist**: Telephony actions are restricted by `AUTHORIZED_PHONE_WHITELIST` to prevent unauthorized outbound dialing. Wildcard destinations are rejected; every authorized number must be listed explicitly.
+* **Dual-Phase Commitment**: CALL-E produces a CALL-E plan confirmation token during call planning that must be validated before execution begins.
+* **Structured Local Audit Trail**: Every turn, transcript segment, and policy check is written to an append-only structured audit log for post-call review.
 
 ---
 
@@ -152,7 +152,7 @@ ResolveCall was executed against live telecommunications infrastructure using re
 python cli.py recover incidents/operational_incident_schema.json
 ```
 
-### Verified Live Telephony Execution Output:
+### Example Telephony Execution Output:
 ```text
 ============================================================
 RESOLVECALL: AUTONOMOUS OPERATIONAL INCIDENT RECOVERY
@@ -186,12 +186,12 @@ Policy Check: PolicyDecision.INVALID - Recovery commitment was refused or could 
 ============================================================
 ```
 
-### Verified Telephony Broker Identifiers:
+### Telephony Execution Notes:
 * **CALL-E Production MCP Broker**: `https://REDACTED-PROVIDER-HOST/mcp/openagent_oauth`
-* **Verified Plan ID**: `PLAN-XXXXXXX`
-* **Verified Call Run ID**: `RUN-XXXXXXXXXXXXXXXXXXXXXXX`
-* **Verified PSTN Carrier Call ID**: `XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX`
-* **Authentic PSTN Outcome**: The destination returned `NO ANSWER`. The system deterministically recorded the actual telephony outcome, rejected the recovery, and updated enterprise state. **Zero fabricated results.**
+* All phone numbers in logs and audit events are masked for privacy.
+
+
+
 
 ---
 
@@ -259,7 +259,12 @@ cp .env.example .env
 Key configuration parameters:
 ```env
 # Telephony Whitelist Policy: Comma-separated authorized phone destinations or '*'
-AUTHORIZED_PHONE_WHITELIST=+18005550100,+15551234567
+# API Authentication (required) — all operational endpoints reject without this key
+RESOLVECALL_API_KEY=your-strong-secret-here
+
+# Telephony Allowlist: comma-separated authorized E.164 phone destinations
+# Wildcard (*) is rejected — all destinations must be explicitly listed
+AUTHORIZED_PHONE_WHITELIST=+18005550100
 
 # CALL-E CLI Path (auto-resolves on Windows and POSIX)
 CALLE_CLI_PATH=calle
