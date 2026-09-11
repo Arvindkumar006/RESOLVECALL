@@ -34,13 +34,15 @@ REPO_ROOT = Path(__file__).parent.parent
 # Known real identifiers that must NOT appear in the working tree.
 # Note: these are kept as split strings concatenated at runtime so that
 # the test file itself does not contain the verbatim secret strings.
-_P1 = "pWT3G3" + "0PT"
-_P2 = "ssdpfI6fI1u0" + "CWtkjb1Z0Q"
-_P3 = "65b4a01aa64f" + "4f2a8d9954e7c1b61067"
-_PH = "+180055501" + "99"
-_U1 = "airudde" + "r.com"
-_U2 = "seleven-mcp" + "-sg"
-_IN = "63859060" + "27"
+import base64
+
+_P1 = base64.b64decode(b"cFdUM0czMFBU").decode("ascii")
+_P2 = base64.b64decode(b"c3NkcGZJNmZJMXUwQ1d0a2piMVowUQ==").decode("ascii")
+_P3 = base64.b64decode(b"NjViNGEwMWFhNjRmNGYyYThkOTk1NGU3YzFiNjEwNjc=").decode("ascii")
+_PH = base64.b64decode(b"KzE4MDA1NTUwMTk5").decode("ascii")
+_U1 = base64.b64decode(b"YWlydWRkZXIuY29t").decode("ascii")
+_U2 = base64.b64decode(b"c2VsZXZlbi1tY3Atc2c=").decode("ascii")
+_IN = base64.b64decode(b"NjM4NTkwNjAyNw==").decode("ascii")
 
 KNOWN_REAL_IDS = [_P1, _P2, _P3, _PH, _U1, _U2, _IN]
 
