@@ -90,6 +90,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initModals();
   initRecoveryTriggerButton();
   initSettings();
+  initAuth();
 
   // Load initial backend telemetry
   await checkHealth();
@@ -283,11 +284,13 @@ function initModals() {
   const btnCancel = document.getElementById("btn-cancel-modal");
   const btnSubmit = document.getElementById("btn-submit-incident");
   const jsonInput = document.getElementById("incident-json-input");
+  const ingestKeyInput = document.getElementById("modal-ingest-api-key");
 
   const openModal = () => {
     if (!jsonInput.value.trim()) {
       jsonInput.value = JSON.stringify(DEFAULT_SCHEMA_TEMPLATE, null, 2);
     }
+    updateAuthUI();
     modal.style.display = "flex";
   };
 
@@ -305,15 +308,24 @@ function initModals() {
       try {
         btnSubmit.disabled = true;
         btnSubmit.textContent = "Registering...";
+
+        // If user entered a key directly in the modal, store in sessionStorage
+        if (ingestKeyInput && ingestKeyInput.value.trim()) {
+          setApiKey(ingestKeyInput.value.trim());
+          ingestKeyInput.value = "";
+        }
+
         const payload = JSON.parse(jsonInput.value);
 
-        const res = await fetch("/api/incidents/ingest", {
+        const res = await apiFetch("/api/incidents/ingest", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.detail || "Ingest failed");
+        if (!res.ok) {
+          throw new Error(data.detail || "Ingest failed");
+        }
 
         closeModal();
         await loadIncidents();
@@ -367,12 +379,12 @@ function initRecoveryTriggerButton() {
         <span>Calling via CALL-E...</span>
       `;
 
-      const res = await fetch(`/api/incidents/${activeIncidentId}/recover`, {
+      const res = await apiFetch(`/api/incidents/${activeIncidentId}/recover`, {
         method: "POST"
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.message || "Failed to trigger recovery");
+        throw new Error(data.message || data.detail || "Failed to trigger recovery");
       }
     } catch (err) {
       alert("Recovery Trigger Error: " + err.message);
@@ -383,6 +395,232 @@ function initRecoveryTriggerButton() {
       `;
     }
   });
+}
+
+// ==========================================================================
+// CLIENT AUTHENTICATION & SECURE SESSION STORAGE
+// ==========================================================================
+
+const SESSION_AUTH_KEY = "resolvecall_session_api_key";
+
+function getApiKey() {
+  try {
+    return sessionStorage.getItem(SESSION_AUTH_KEY) || "";
+  } catch (err) {
+    return "";
+  }
+}
+
+function setApiKey(key) {
+  const trimmed = (key || "").trim();
+  try {
+    if (trimmed) {
+      sessionStorage.setItem(SESSION_AUTH_KEY, trimmed);
+    } else {
+      sessionStorage.removeItem(SESSION_AUTH_KEY);
+    }
+  } catch (err) {}
+
+  updateAuthUI();
+
+  if (trimmed) {
+    loadIncidents();
+    loadGlobalAudit();
+  }
+}
+
+function clearApiKey() {
+  try {
+    sessionStorage.removeItem(SESSION_AUTH_KEY);
+  } catch (err) {}
+  updateAuthUI();
+}
+
+function hasApiKey() {
+  return Boolean(getApiKey());
+}
+
+async function apiFetch(url, options = {}) {
+  const opts = { ...options };
+  opts.headers = { ...(opts.headers || {}) };
+
+  const key = getApiKey();
+  if (key) {
+    opts.headers["X-API-Key"] = key;
+  }
+
+  const res = await fetch(url, opts);
+  if (res.status === 401) {
+    updateAuthUI(true);
+  }
+  return res;
+}
+
+function updateAuthUI(isAuthError = false) {
+  const isConfigured = hasApiKey();
+
+  // Topbar badge
+  const topbarBadge = document.getElementById("btn-open-auth-modal");
+  const topbarLabel = document.getElementById("topbar-auth-label");
+  if (topbarBadge) {
+    topbarBadge.classList.remove("configured", "unconfigured");
+    if (isAuthError) {
+      topbarBadge.classList.add("unconfigured");
+      if (topbarLabel) topbarLabel.textContent = "Auth 401 (Set Key)";
+    } else if (isConfigured) {
+      topbarBadge.classList.add("configured");
+      if (topbarLabel) topbarLabel.textContent = "API Key Active";
+    } else {
+      topbarBadge.classList.add("unconfigured");
+      if (topbarLabel) topbarLabel.textContent = "Set API Key";
+    }
+  }
+
+  // Auth Dialog Status & Inputs
+  const authInput = document.getElementById("auth-input-key");
+  const authDialogStatus = document.getElementById("auth-modal-status");
+  if (authInput) {
+    authInput.value = "";
+    authInput.placeholder = isConfigured ? "•••••••• (Session Key Set)" : "Enter API secret...";
+  }
+  if (authDialogStatus) {
+    if (isAuthError) {
+      authDialogStatus.innerHTML = `<span style="color:#ef4444;font-weight:600;">⚠ 401 Unauthorized: Supplied key rejected by backend.</span>`;
+    } else if (isConfigured) {
+      authDialogStatus.innerHTML = `<span style="color:#10b981;font-weight:600;">● Active in sessionStorage. Sent via X-API-Key.</span>`;
+    } else {
+      authDialogStatus.innerHTML = `<span style="color:var(--text-muted);">○ No key in session. Protected calls will return 401.</span>`;
+    }
+  }
+
+  // Ingest Modal Input
+  const ingestKeyInput = document.getElementById("modal-ingest-api-key");
+  const ingestKeyStatus = document.getElementById("modal-ingest-key-status");
+  if (ingestKeyInput) {
+    ingestKeyInput.value = "";
+    ingestKeyInput.placeholder = isConfigured ? "•••••••• (Session Key Set)" : "Enter RESOLVECALL_API_KEY for session...";
+  }
+  if (ingestKeyStatus) {
+    if (isAuthError) {
+      ingestKeyStatus.innerHTML = `<span style="color:#ef4444;">⚠ Authentication error: Please re-enter a valid API key.</span>`;
+    } else if (isConfigured) {
+      ingestKeyStatus.innerHTML = `<span style="color:#10b981;">● Session key configured. Protected endpoints will authenticate.</span>`;
+    } else {
+      ingestKeyStatus.innerHTML = `Stored only in sessionStorage for local development. Never exposed or logged.`;
+    }
+  }
+
+  // Settings Subview Input
+  const settingsKeyInput = document.getElementById("settings-api-key-input");
+  const settingsKeyStatus = document.getElementById("settings-api-key-status");
+  if (settingsKeyInput) {
+    settingsKeyInput.value = "";
+    settingsKeyInput.placeholder = isConfigured ? "•••••••• (Session Key Set)" : "Enter RESOLVECALL_API_KEY...";
+  }
+  if (settingsKeyStatus) {
+    if (isAuthError) {
+      settingsKeyStatus.innerHTML = `<span style="color:#ef4444;">⚠ Status: Authentication failed (401). Check server API key.</span>`;
+    } else if (isConfigured) {
+      settingsKeyStatus.innerHTML = `<span style="color:#10b981;">● Status: Key active in sessionStorage.</span>`;
+    } else {
+      settingsKeyStatus.innerHTML = `Status: No key configured in sessionStorage.`;
+    }
+  }
+}
+
+function initAuth() {
+  const modalAuth = document.getElementById("modal-auth");
+  const btnOpen = document.getElementById("btn-open-auth-modal");
+  const btnClose = document.getElementById("btn-close-auth-modal");
+  const btnSave = document.getElementById("btn-save-auth-modal");
+  const btnClear = document.getElementById("btn-clear-auth-modal");
+  const authInput = document.getElementById("auth-input-key");
+
+  if (btnOpen && modalAuth) {
+    btnOpen.addEventListener("click", () => {
+      updateAuthUI();
+      modalAuth.style.display = "flex";
+      if (authInput) authInput.focus();
+    });
+  }
+
+  if (btnClose && modalAuth) {
+    btnClose.addEventListener("click", () => {
+      modalAuth.style.display = "none";
+    });
+  }
+
+  if (btnSave && authInput && modalAuth) {
+    btnSave.addEventListener("click", () => {
+      if (authInput.value.trim()) {
+        setApiKey(authInput.value.trim());
+      }
+      modalAuth.style.display = "none";
+    });
+
+    authInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        if (authInput.value.trim()) {
+          setApiKey(authInput.value.trim());
+        }
+        modalAuth.style.display = "none";
+      }
+    });
+  }
+
+  if (btnClear && modalAuth) {
+    btnClear.addEventListener("click", () => {
+      clearApiKey();
+    });
+  }
+
+  // Ingest modal save button
+  const btnSaveIngest = document.getElementById("btn-save-ingest-key");
+  const ingestKeyInput = document.getElementById("modal-ingest-api-key");
+  if (btnSaveIngest && ingestKeyInput) {
+    btnSaveIngest.addEventListener("click", () => {
+      if (ingestKeyInput.value.trim()) {
+        setApiKey(ingestKeyInput.value.trim());
+      }
+    });
+
+    ingestKeyInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (ingestKeyInput.value.trim()) {
+          setApiKey(ingestKeyInput.value.trim());
+        }
+      }
+    });
+  }
+
+  // Settings subview save/clear buttons
+  const btnSettingsSave = document.getElementById("btn-settings-save-key");
+  const btnSettingsClear = document.getElementById("btn-settings-clear-key");
+  const settingsInput = document.getElementById("settings-api-key-input");
+  if (btnSettingsSave && settingsInput) {
+    btnSettingsSave.addEventListener("click", () => {
+      if (settingsInput.value.trim()) {
+        setApiKey(settingsInput.value.trim());
+      }
+    });
+
+    settingsInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (settingsInput.value.trim()) {
+          setApiKey(settingsInput.value.trim());
+        }
+      }
+    });
+  }
+  if (btnSettingsClear) {
+    btnSettingsClear.addEventListener("click", () => {
+      clearApiKey();
+    });
+  }
+
+  updateAuthUI();
 }
 
 // ==========================================================================
@@ -414,7 +652,7 @@ function updateHealthUI(isHealthy) {
 
 async function loadIncidents() {
   try {
-    const res = await fetch("/api/incidents");
+    const res = await apiFetch("/api/incidents");
     if (!res.ok) return;
     allIncidents = await res.json();
 
@@ -442,7 +680,7 @@ async function loadIncidents() {
 
 async function loadGlobalAudit() {
   try {
-    const res = await fetch("/api/audit");
+    const res = await apiFetch("/api/audit");
     if (!res.ok) return;
     allAuditEvents = await res.json();
     renderFullAuditFeed();
@@ -465,7 +703,7 @@ async function selectIncident(incidentId) {
   let inc = allIncidents.find(i => i.incident_id === incidentId);
   if (!inc) {
     try {
-      const res = await fetch(`/api/incidents/${incidentId}`);
+      const res = await apiFetch(`/api/incidents/${incidentId}`);
       if (res.ok) inc = await res.json();
     } catch (err) {
       console.error(err);
@@ -531,7 +769,7 @@ function connectIncidentSSE(incidentId) {
 
 async function loadIncidentAudit(incidentId) {
   try {
-    const res = await fetch(`/api/audit?incident_id=${incidentId}`);
+    const res = await apiFetch(`/api/audit?incident_id=${incidentId}`);
     if (!res.ok) return;
     const events = await res.json();
     const feed = document.getElementById("audit-feed");
