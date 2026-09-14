@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: resolvecall
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn resolvecall.web.app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: RESOLVECALL_API_KEY
+        generateValue: true
+      - key: AUTHORIZED_PHONE_WHITELIST
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.11.9
